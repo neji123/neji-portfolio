@@ -12,7 +12,7 @@ Build a **frontend-only**, fast, accessible and memorable personal portfolio tha
 - **Audience:** tech recruiters, engineering managers, potential freelance clients.
 - **First impression (5 seconds):** "Senior-quality Full Stack Developer, international experience, ships real products."
 - **Primary action:** contact me (email / LinkedIn / download CV).
-- **Language:** English (structure must be i18n-ready so French/Arabic can be added later, including RTL).
+- **Languages:** trilingual, **English (default) / French / Arabic**, with a true RTL experience for Arabic (see section 7, *Internationalization*).
 
 ---
 
@@ -21,6 +21,7 @@ Build a **frontend-only**, fast, accessible and memorable personal portfolio tha
 | Area | Choice |
 |---|---|
 | Framework | **Next.js (latest stable, App Router)**, React Server Components by default |
+| Runtime | **Node.js 20.20** (`"engines": { "node": ">=20.9" }`, `.nvmrc` = `20`). Never add a dependency or tool that requires Node 22+ |
 | Language | **TypeScript, `strict: true`**, no `any` |
 | Styling | **Tailwind CSS** + CSS variables for design tokens |
 | UI primitives | shadcn/ui (only what is needed) |
@@ -28,7 +29,8 @@ Build a **frontend-only**, fast, accessible and memorable personal portfolio tha
 | Animation | **GSAP** (+ ScrollTrigger, `@gsap/react` `useGSAP`) for scroll/timeline; CSS transitions for micro-interactions |
 | Smooth scroll | **Lenis** (`lenis/react`), synced with GSAP ScrollTrigger |
 | Components inspiration | React Bits, 21st.dev (copy, then adapt to our tokens; never paste blindly) |
-| Fonts | `next/font` (self-hosted, no layout shift) |
+| i18n | **next-intl** with locale routing: `/en` (default), `/fr`, `/ar`; browser-language detection on first visit, choice remembered in a cookie |
+| Fonts | `next/font` (self-hosted, no layout shift): one Latin family for EN/FR + one dedicated high-quality Arabic family (e.g. IBM Plex Sans Arabic or Noto Kufi Arabic) matched to the art direction |
 | Images | `next/image`, AVIF/WebP |
 | Quality | ESLint (next + typescript), Prettier, Husky + lint-staged, Conventional Commits |
 | Testing | Playwright (E2E + visual screenshots + accessibility with `@axe-core/playwright`) |
@@ -41,6 +43,8 @@ No backend, no database. Contact = `mailto:` + links (optionally a form service 
 ## 3. Skills to install and how to use them
 
 Install at project level, then **read each SKILL.md before using it**. If an install command fails, find the official repo and install manually. Do not invent skills.
+
+> **Node 20 constraint:** use the skills installer pinned at `npx skills@1.5.26` (1.6+ requires Node 22). taste-skill's `draw.mjs`, `inspect.mjs` and `scenes.mjs` require Node 22 and are **not used**: apply its rules manually and verify with Playwright screenshots. Before running any taste-skill script, state in one line what it does.
 
 ```bash
 npx skills add https://github.com/Leonxlnx/taste-skill --skill "design-taste-frontend"
@@ -95,17 +99,28 @@ If you have a better and still unique 3D idea that fits a Full Stack Developer, 
 ### Folder structure
 
 ```
+messages/
+  en.json                 # all UI strings (nav, labels, buttons, aria-labels, metadata, 404)
+  fr.json
+  ar.json
 src/
+  i18n/
+    routing.ts            # next-intl defineRouting: locales, defaultLocale, cookie
+    request.ts            # getRequestConfig: loads messages for the locale
+    navigation.ts         # locale-aware Link, redirect, usePathname, useRouter
+  proxy.ts                # next-intl middleware (Next 16 "proxy" convention): detection + cookie
   app/
-    layout.tsx            # fonts, metadata, providers (Lenis), skip link
-    page.tsx              # composes sections only, no logic
-    not-found.tsx
-    opengraph-image.tsx
-    sitemap.ts
+    [locale]/
+      layout.tsx          # <html lang dir>, fonts per script, metadata, providers (Lenis), skip link
+      page.tsx            # composes sections only, no logic
+      not-found.tsx
+      opengraph-image.tsx # localized OG image
+    sitemap.ts            # localized URLs + hreflang alternates
     robots.ts
   components/
     ui/                   # generic, reusable, stateless (Button, Badge, Card, Section, Heading)
-    layout/               # Header, Footer, Nav, MobileMenu
+    layout/               # Header, Footer, Nav, MobileMenu, LanguageSwitcher
+    flags/                # SVG flags: UnitedKingdom, France, Tunisia
     motion/               # Reveal, SplitText, MagneticButton, PageTransition (GSAP wrappers)
     three/                # JourneyGlobe, GlobeArcs, GlobeFallback
   features/               # one folder per page section
@@ -114,10 +129,10 @@ src/
     experience/
     projects/
     skills/
-    certifications/
+    certifications/       # includes CertificateLightbox (accessible modal)
     contact/
-  content/                # ALL text and data as typed objects (no hard-coded text in components)
-    profile.ts
+  content/                # ALL text and data as typed objects, per locale (no hard-coded text in components)
+    profile.ts            # each file is typed per locale (Record<Locale, T> or locale-keyed fields)
     experience.ts
     projects.ts
     skills.ts
@@ -148,6 +163,13 @@ tests/
 - Semantic HTML (`header`, `main`, `section` with `aria-labelledby`, `footer`), one `h1`, logical heading order.
 - No console errors, no hydration warnings, no unused dependencies.
 
+### Internationalization rules
+- UI strings live only in `messages/{en,fr,ar}.json`; content lives in `src/content/` typed per locale.
+- **A missing translation key must fail the build:** `messages/en.json` is the source of truth; next-intl's `AppConfig` augmentation types every `useTranslations` key, and a type-level check asserts that `fr.json` and `ar.json` have exactly the same key shape as `en.json` (enforced by `npm run typecheck` and `npm run build`). Content objects use `Record<Locale, T>`, so a missing locale is a type error.
+- **RTL everywhere:** `<html lang dir>` per locale; Tailwind logical utilities only (`ms-/me-/ps-/pe-`, `start-/end-`, `text-start/end`, `border-s/e`, `rounded-s/e`), never `left/right`, `ml/mr` or `pl/pr`. Directional icons (arrows, chevrons) are mirrored in RTL; non-directional icons and logos are not.
+- **Motion in RTL:** GSAP slide directions read the document direction (`useDirection()` hook) and invert x offsets in RTL; Lenis and ScrollTrigger are tested in RTL.
+- Company names, product names and technologies stay in their original form in every locale (Next.js, Angular, Takween, Mustawfi, EY…).
+
 ---
 
 ## 6. Quality targets (definition of done)
@@ -158,6 +180,9 @@ tests/
 - Responsive and tested at **360, 768, 1024, 1440, 1920 px**; no horizontal scroll.
 - SEO: metadata, Open Graph image, JSON-LD `Person` schema, sitemap, robots, canonical URL.
 - Playwright: E2E for navigation, CV download and contact links; screenshot for each section on mobile and desktop.
+- **i18n:** every Playwright test runs for **all 3 locales** (en, fr, ar) on desktop and mobile; a test switches the language through the header switcher and asserts `lang="ar"` and `dir="rtl"` on `/ar`; checkpoint screenshots are taken for each locale.
+- **SEO per locale:** translated metadata and Open Graph, `hreflang` alternates (`en`, `fr`, `ar`, `x-default`), localized sitemap, canonical URL per locale.
+- Certificate lightbox: focus trap, `Esc` closes, focus returns to the trigger, zero axe violations while open.
 - `npm run lint`, `npm run typecheck`, `npm run build` and `npm run test:e2e` all pass.
 
 ---
@@ -165,7 +190,12 @@ tests/
 ## 7. Sections & content
 
 ### Navigation
-About · Experience · Projects · Skills · Certifications · Contact · **[Download CV]** button
+About · Experience · Projects · Skills · Certifications · Contact · **[Download CV]** button · **Language switcher**
+
+### Language switcher
+- Three SVG flags (no emoji): **United Kingdom (EN)**, **France (FR)**, **Tunisia (AR)**, each with a short visible label (EN / FR / AR) and an `aria-label` ("English", "Français", "العربية").
+- In the header on desktop and inside the mobile menu on mobile; fully keyboard operable; the current locale is marked with `aria-current`.
+- Switching keeps the visitor on the same page and stores the choice in a cookie.
 
 ### Hero
 - **Name:** Mohamed Neji Benzarti
@@ -219,9 +249,11 @@ Key figures (animated counters): **4 countries** · **5+ production projects** �
 - **Professional Training in Artificial Intelligence**, Optimus Training (state-approved, ANETI) · Jan 2026 to Jun 2026
 
 ### Certifications
-- **Professional Training Certificate in Artificial Intelligence**, Optimus Training · Jun 2026
-- **TCF Tout Public, Level B2 (CEFR)**, France Éducation International · Jan 2026
+- **Professional Training Certificate in Artificial Intelligence**, Optimus Training · Jun 2026 · image: `images/certificates/certificate-ai-optimus.png`
+- **TCF Tout Public, Level B2 (CEFR)**, France Éducation International · Jan 2026 · image: `images/certificates/tcf-b2.png`
 - **Cisco CCNA: Switching, Routing, and Wireless Essentials**: https://www.credly.com/badges/312e7aad-e46d-46f1-8cb4-97831eddbc35
+
+Each certificate is a card with a thumbnail (optimized with `next/image`). For the two certificate images, clicking the card opens an **accessible lightbox/modal** with the full image: focus trap, `Esc` closes, focus returns to the card, descriptive translated alt text. The CCNA card keeps its Credly link.
 
 ### Languages
 Arabic (Native) · English (Professional) · French (B2)
@@ -233,8 +265,15 @@ Arabic (Native) · English (Professional) · French (B2)
 - **CV:** `/cv/CV_Mohamed_Neji_Benzarti.pdf`
 - Closing line: *"Have a project or an opportunity in mind? Let's talk."*
 
+### Internationalization
+Every piece of text is translated into **English, French and Arabic**: navigation, hero, about, experience, projects, skills, certifications, contact, the 3D globe labels, metadata, Open Graph and the 404 page. Translations are faithful and professional (professional French, Modern Standard Arabic). Company names, product names and technologies are not translated.
+
 ### Privacy rules (mandatory)
-Never publish: national ID (CIN) number, date of birth, candidate numbers, full certificate scans containing personal data, home address.
+Never publish: national ID (CIN) number, date of birth, home address.
+
+**Authorized exception:** the owner explicitly authorizes publishing the two certificate images listed under *Certifications* (`certificate-ai-optimus.png`, `tcf-b2.png`); the owner has already hidden the ID number on them. Do not publish any other certificate scan.
+
+The CV PDF in `public/cv/` is provided by the owner and is never edited by the agent. The WhatsApp number in it is intentional.
 
 ---
 
@@ -242,8 +281,11 @@ Never publish: national ID (CIN) number, date of birth, candidate numbers, full 
 
 | File | Use |
 |---|---|
-| `images/profile.jpg` | About section / hero (circular or masked shape) |
-| `cv/CV_Mohamed_Neji_Benzarti.pdf` | Download CV button |
+| `images/profile-transparent.png` | **Main portrait** (transparent background), integrated into the hero/about design with a subtle glow or gradient behind it. This overrides taste-skill's no-glow rule at the owner's explicit request |
+| `images/profile.jpg`, `images/profile-square.*` | Fallbacks / OG image source |
+| `images/certificates/certificate-ai-optimus.png` | Certifications card + lightbox (AI training, Optimus Training) |
+| `images/certificates/tcf-b2.png` | Certifications card + lightbox (TCF B2) |
+| `cv/CV_Mohamed_Neji_Benzarti.pdf` | Download CV button (owner-provided, never edited by the agent; one CV for all locales unless the owner adds localized versions) |
 | `images/projects/mustawfi.png`, `takween.png`, `plagediscount.png` | Project cards (if missing: capture them with Playwright at 1440×900) |
 | `images/logos/` (optional) | Company logos: Takween, EY, ITEC Études, IPACT, ESPRIT |
 
@@ -254,8 +296,8 @@ Never publish: national ID (CIN) number, date of birth, candidate numbers, full 
 | Phase | Work | Checkpoint (stop and show me) |
 |---|---|---|
 | **0. Setup** | Install skills, read SKILL.md files, create the Next.js project, tooling (ESLint, Prettier, Husky, Playwright), folder structure | Summary of installed skills and the structure |
-| **1. Design direction** | Use refero/awesome-design + taste/impeccable: propose **2 art directions** (palette, typography, mood, 3D style) as a short visual moodboard | **I choose one** |
-| **2. Foundations** | Design tokens, fonts, layout, header/footer, Lenis + GSAP setup, `content/` typed data, base `ui/` components | Screenshots desktop + mobile |
+| **1. Design direction** | Use refero/awesome-design + taste/impeccable: propose **2 art directions** (palette, Latin + Arabic typography, mood, 3D style) as a moodboard built as pages in the project, each shown in **EN and AR** | **I choose one** |
+| **2. Foundations** | Design tokens, fonts (Latin + Arabic), next-intl routing + messages + missing-key check, layout, header/footer + language switcher, Lenis + GSAP setup (RTL-aware), `content/` typed per locale, base `ui/` components | Screenshots desktop + mobile × 3 locales |
 | **3. Sections** | Hero, About, Experience, Projects, Skills, Certifications, Contact (static first, no animation yet) | Screenshots of each section |
 | **4. 3D Journey Globe** | Build, lazy-load, fallback, performance | Video/GIF + performance numbers |
 | **5. Motion & polish** | GSAP scroll animations, transitions, micro-interactions (make-interfaces-feel-better), reduced-motion | Screen recording |
