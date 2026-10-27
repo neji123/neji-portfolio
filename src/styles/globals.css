@@ -1,0 +1,26 @@
+@import "tailwindcss";
+
+/*
+ * Neutral placeholder tokens. The real palette, type and spacing tokens
+ * land in Phase 2, once an art direction is chosen in Phase 1.
+ */
+:root {
+  --color-ground: oklch(0.16 0.01 260);
+  --color-ink: oklch(0.97 0 0);
+}
+
+@theme inline {
+  --color-ground: var(--color-ground);
+  --color-ink: var(--color-ink);
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background: var(--color-ground);
+  color: var(--color-ink);
+  font-family: system-ui, sans-serif;
+}

@@ -1,0 +1,14 @@
+.next
+out
+build
+node_modules
+package-lock.json
+next-env.d.ts
+.claude
+.taste-skill
+skills-lock.json
+playwright-report
+test-results
+public
+PORTFOLIO_BRIEF.md
+AGENTS.md
