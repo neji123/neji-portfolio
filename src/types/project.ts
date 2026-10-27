@@ -9,6 +9,6 @@ export type Project = {
   stack: readonly string[];
   link: ProjectLink;
   featured: boolean;
-  /** Captured in Phase 3; absent until then. */
+  /** Home-page capture of the live site; private projects have none. */
   image?: ImageAsset;
 };

@@ -11,6 +11,7 @@ export const projects: readonly Project[] = [
     },
     stack: ["Next.js", "Express", "MongoDB", "Docker"],
     link: { kind: "live", url: "https://www.mustawfi.com" },
+    image: { src: "/images/projects/mustawfi.webp", width: 1440, height: 900 },
     featured: true,
   },
   {
@@ -23,6 +24,7 @@ export const projects: readonly Project[] = [
     },
     stack: ["React.js"],
     link: { kind: "live", url: "https://www.takween.com.kw" },
+    image: { src: "/images/projects/takween.webp", width: 1440, height: 900 },
     featured: false,
   },
   {
@@ -35,6 +37,7 @@ export const projects: readonly Project[] = [
     },
     stack: ["Angular", "Django", "Docker", "Hetzner"],
     link: { kind: "live", url: "https://plagediscount.com" },
+    image: { src: "/images/projects/plagediscount.webp", width: 1440, height: 900 },
     featured: false,
   },
   {

@@ -7,7 +7,7 @@ type IconProps = {
 };
 
 // One set, one 1.5 stroke, coloured by currentColor so states come from CSS.
-function IconFrame({ className, children }: IconProps & { children: ReactNode }) {
+export function IconFrame({ className, children }: IconProps & { children: ReactNode }) {
   return (
     <svg
       viewBox="0 0 24 24"
@@ -46,6 +46,15 @@ export function ArrowIcon({ className }: IconProps) {
   return (
     <IconFrame className={cn("rtl:-scale-x-100", className)}>
       <path d="M5 12h14M13 6l6 6-6 6" />
+    </IconFrame>
+  );
+}
+
+/** Leaves the site toward the reading end: mirrored in right-to-left. */
+export function ExternalIcon({ className }: IconProps) {
+  return (
+    <IconFrame className={cn("rtl:-scale-x-100", className)}>
+      <path d="M8 16L16 8M9 8h7v7" />
     </IconFrame>
   );
 }

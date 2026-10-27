@@ -2,7 +2,8 @@ import { type ImageAsset, type IsoMonth, type Localized, type LocalizedText } fr
 
 export type CertificationProof =
   | { kind: "image"; image: ImageAsset; alt: Localized<string> }
-  | { kind: "credential"; url: string };
+  /** Verified on a third-party site; `mark` is the short name set on the card, e.g. "CCNA". */
+  | { kind: "credential"; url: string; mark: string };
 
 export type Certification = {
   id: string;

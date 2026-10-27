@@ -169,11 +169,11 @@
 
 @layer components {
   /* The one sanctioned glow: the light behind the portrait, an explicit owner requirement (PORTFOLIO_BRIEF.md §8). taste-skill-ignore */
+  /* prettier-ignore */
   .portrait-glow {
-    background:
-      radial-gradient(closest-side, var(--glow), transparent 72%),
-      /* taste-skill-ignore: owner-requested portrait glow */
-        radial-gradient(closest-side, var(--glow-far), transparent 100%); /* taste-skill-ignore: owner-requested portrait glow */
+    --glow-near-layer: radial-gradient(closest-side, var(--glow), transparent 72%); /* taste-skill-ignore: owner-requested portrait glow */
+    --glow-far-layer: radial-gradient(closest-side, var(--glow-far), transparent 100%); /* taste-skill-ignore: owner-requested portrait glow */
+    background: var(--glow-near-layer), var(--glow-far-layer);
   }
 
   /* The current stop breathes; reduced motion holds it still. */
@@ -248,6 +248,65 @@
       transition-duration: 0s;
       translate: 0 0;
     }
+  }
+}
+
+@layer components {
+  /* The current stop on the experience route keeps breathing. */
+  .marker-pulse::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: var(--route);
+    animation: marker-pulse 2.4s var(--ease-smooth-out) infinite;
+  }
+
+  /* Certificate lightbox: fades in over a deep night backdrop. */
+  .lightbox-dialog {
+    opacity: 0;
+    scale: 0.98;
+    transition-property: opacity, scale, overlay, display;
+    transition-duration: var(--duration-fast);
+    transition-timing-function: var(--ease-smooth-out);
+    transition-behavior: allow-discrete;
+  }
+
+  .lightbox-dialog[open] {
+    opacity: 1;
+    scale: 1;
+
+    @starting-style {
+      opacity: 0;
+      scale: 0.98;
+    }
+  }
+
+  .lightbox-dialog::backdrop {
+    background: rgb(5 12 22 / 0.9);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .marker-pulse::after {
+      animation: none;
+      opacity: 0;
+    }
+
+    .lightbox-dialog {
+      transition-duration: 0s;
+      scale: 1;
+    }
+  }
+}
+
+@keyframes marker-pulse {
+  from {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(2.6);
   }
 }
 

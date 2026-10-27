@@ -36,18 +36,22 @@
     "contact": "Contact"
   },
   "Experience": {
-    "present": "Present"
+    "present": "Present",
+    "current": "Current role",
+    "stack": "Stack"
   },
   "Projects": {
-    "featured": "Featured project",
     "visit": "Visit {name}",
-    "private": "Private project, no public link"
+    "private": "Private project, no public link",
+    "screenshotAlt": "Screenshot of the {name} home page",
+    "stack": "Stack"
   },
   "Certifications": {
     "view": "View certificate",
     "credential": "View credential on Credly",
     "close": "Close",
-    "issued": "Issued {date}"
+    "issued": "Issued {date}",
+    "openLabel": "Open the certificate: {name}"
   },
   "Contact": {
     "closing": "Have a project or an opportunity in mind? Let's talk.",
@@ -68,5 +72,11 @@
     "title": "Page not found",
     "body": "This page took a different route. The rest of the journey is still here.",
     "home": "Back to the home page"
+  },
+  "About": {
+    "figuresLabel": "Key figures"
+  },
+  "Skills": {
+    "intro": "Grouped by where they sit in the stack, from the interface down to the infrastructure."
   }
 }

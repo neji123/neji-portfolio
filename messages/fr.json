@@ -36,18 +36,22 @@
     "contact": "Contact"
   },
   "Experience": {
-    "present": "Aujourd'hui"
+    "present": "Aujourd'hui",
+    "current": "Poste actuel",
+    "stack": "Technologies"
   },
   "Projects": {
-    "featured": "Projet phare",
     "visit": "Visiter {name}",
-    "private": "Projet privé, sans lien public"
+    "private": "Projet privé, sans lien public",
+    "screenshotAlt": "Capture d'écran de la page d'accueil de {name}",
+    "stack": "Technologies"
   },
   "Certifications": {
     "view": "Voir le certificat",
     "credential": "Voir le badge sur Credly",
     "close": "Fermer",
-    "issued": "Délivré en {date}"
+    "issued": "Délivré en {date}",
+    "openLabel": "Ouvrir le certificat : {name}"
   },
   "Contact": {
     "closing": "Un projet ou une opportunité en tête ? Parlons-en.",
@@ -68,5 +72,11 @@
     "title": "Page introuvable",
     "body": "Cette page a pris une autre route. Le reste du parcours est toujours là.",
     "home": "Retour à l'accueil"
+  },
+  "About": {
+    "figuresLabel": "Chiffres clés"
+  },
+  "Skills": {
+    "intro": "Regroupées selon leur place dans la stack, de l'interface jusqu'à l'infrastructure."
   }
 }

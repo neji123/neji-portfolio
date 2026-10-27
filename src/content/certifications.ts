@@ -46,6 +46,7 @@ export const certifications: readonly Certification[] = [
     issuer: "Cisco",
     proof: {
       kind: "credential",
+      mark: "CCNA",
       url: "https://www.credly.com/badges/312e7aad-e46d-46f1-8cb4-97831eddbc35",
     },
   },
