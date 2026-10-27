@@ -1,0 +1,72 @@
+{
+  "SkipLink": {
+    "label": "Skip to content"
+  },
+  "Header": {
+    "homeLabel": "{name}, back to top",
+    "primaryNav": "Main",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
+  },
+  "Nav": {
+    "about": "About",
+    "experience": "Experience",
+    "projects": "Projects",
+    "skills": "Skills",
+    "certifications": "Certifications",
+    "contact": "Contact",
+    "downloadCv": "Download CV"
+  },
+  "LanguageSwitcher": {
+    "label": "Language"
+  },
+  "Hero": {
+    "viewWork": "View my work",
+    "downloadCv": "Download CV",
+    "portraitAlt": "Portrait of {name} in a navy suit and tie"
+  },
+  "Sections": {
+    "about": "About",
+    "experience": "Experience",
+    "projects": "Projects",
+    "skills": "Skills",
+    "certifications": "Certifications",
+    "education": "Education",
+    "languages": "Languages",
+    "contact": "Contact"
+  },
+  "Experience": {
+    "present": "Present"
+  },
+  "Projects": {
+    "featured": "Featured project",
+    "visit": "Visit {name}",
+    "private": "Private project, no public link"
+  },
+  "Certifications": {
+    "view": "View certificate",
+    "credential": "View credential on Credly",
+    "close": "Close",
+    "issued": "Issued {date}"
+  },
+  "Contact": {
+    "closing": "Have a project or an opportunity in mind? Let's talk.",
+    "email": "Email",
+    "linkedin": "LinkedIn",
+    "github": "GitHub",
+    "cv": "Download CV"
+  },
+  "Globe": {
+    "label": "Globe showing the career route: Tunis, Montréal, France, then Kuwait City",
+    "loading": "Loading the journey globe"
+  },
+  "Footer": {
+    "copyright": "© {year} {name}",
+    "backToTop": "Back to top"
+  },
+  "NotFound": {
+    "title": "Page not found",
+    "body": "This page took a different route. The rest of the journey is still here.",
+    "home": "Back to the home page"
+  }
+}

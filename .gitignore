@@ -49,5 +49,9 @@ next-env.d.ts
 
 # design tooling working files
 /.taste-skill/
-/.impeccable/
+/.impeccable/review/
+/.impeccable/mocks/
+/.impeccable/build/
+/.impeccable/live/
+/.impeccable/config.local.json
 /screenshots/

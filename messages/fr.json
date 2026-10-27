@@ -1,0 +1,72 @@
+{
+  "SkipLink": {
+    "label": "Aller au contenu"
+  },
+  "Header": {
+    "homeLabel": "{name}, retour en haut",
+    "primaryNav": "Principale",
+    "openMenu": "Ouvrir le menu",
+    "closeMenu": "Fermer le menu"
+  },
+  "Nav": {
+    "about": "À propos",
+    "experience": "Expérience",
+    "projects": "Projets",
+    "skills": "Compétences",
+    "certifications": "Certifications",
+    "contact": "Contact",
+    "downloadCv": "Télécharger le CV"
+  },
+  "LanguageSwitcher": {
+    "label": "Langue"
+  },
+  "Hero": {
+    "viewWork": "Voir mes projets",
+    "downloadCv": "Télécharger le CV",
+    "portraitAlt": "Portrait de {name} en costume bleu marine et cravate"
+  },
+  "Sections": {
+    "about": "À propos",
+    "experience": "Expérience",
+    "projects": "Projets",
+    "skills": "Compétences",
+    "certifications": "Certifications",
+    "education": "Formation",
+    "languages": "Langues",
+    "contact": "Contact"
+  },
+  "Experience": {
+    "present": "Aujourd'hui"
+  },
+  "Projects": {
+    "featured": "Projet phare",
+    "visit": "Visiter {name}",
+    "private": "Projet privé, sans lien public"
+  },
+  "Certifications": {
+    "view": "Voir le certificat",
+    "credential": "Voir le badge sur Credly",
+    "close": "Fermer",
+    "issued": "Délivré en {date}"
+  },
+  "Contact": {
+    "closing": "Un projet ou une opportunité en tête ? Parlons-en.",
+    "email": "E-mail",
+    "linkedin": "LinkedIn",
+    "github": "GitHub",
+    "cv": "Télécharger le CV"
+  },
+  "Globe": {
+    "label": "Globe montrant le parcours : Tunis, Montréal, la France, puis Koweït City",
+    "loading": "Chargement du globe du parcours"
+  },
+  "Footer": {
+    "copyright": "© {year} {name}",
+    "backToTop": "Retour en haut"
+  },
+  "NotFound": {
+    "title": "Page introuvable",
+    "body": "Cette page a pris une autre route. Le reste du parcours est toujours là.",
+    "home": "Retour à l'accueil"
+  }
+}

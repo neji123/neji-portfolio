@@ -18,7 +18,7 @@ The job in every case: decide quickly whether to contact Mohamed Neji Benzarti, 
 
 ## Product Purpose
 
-The personal portfolio of Mohamed Neji Benzarti, Full Stack Developer based in Kuwait. It exists to make the right people reach out. Success means a visitor leaves within seconds believing "senior-quality full stack developer, international experience, ships real products", then contacts him.
+The personal portfolio of Mohamed Neji Benzarti, software engineer (web development) based in Kuwait. It exists to make the right people reach out. Success means a visitor leaves within seconds believing "senior-quality software engineer, international experience, ships real products", then contacts him.
 
 ## Positioning
 
@@ -40,7 +40,8 @@ A path no neighbouring developer shares: **Tunis → Montréal → France → Ku
 
 ## Brand Commitments
 
-- Name: **Mohamed Neji Benzarti**. Title: **Full Stack Developer**.
+- Name: **Mohamed Neji Benzarti**; in Arabic exactly **محمد الناجي البنزرتي**.
+- Title: EN **Software Engineer, Web Development** · FR **Ingénieur logiciel spécialisé en développement web** · AR **مهندس برمجيات متخصص في إنشاء المواقع الإلكترونية**.
 - Tagline: "I build modern, scalable web applications that turn ideas into reliable products."
 - Location badge: "Based in Kuwait · Open to opportunities".
 - Main portrait: `public/images/profile-transparent.png` (transparent background), integrated into the hero/about with a subtle glow or gradient behind it. This is an explicit owner requirement.

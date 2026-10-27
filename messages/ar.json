@@ -1,0 +1,72 @@
+{
+  "SkipLink": {
+    "label": "الانتقال إلى المحتوى"
+  },
+  "Header": {
+    "homeLabel": "{name}، العودة إلى الأعلى",
+    "primaryNav": "الرئيسية",
+    "openMenu": "فتح القائمة",
+    "closeMenu": "إغلاق القائمة"
+  },
+  "Nav": {
+    "about": "نبذة عني",
+    "experience": "الخبرات",
+    "projects": "المشاريع",
+    "skills": "المهارات",
+    "certifications": "الشهادات",
+    "contact": "تواصل",
+    "downloadCv": "تحميل السيرة الذاتية"
+  },
+  "LanguageSwitcher": {
+    "label": "اللغة"
+  },
+  "Hero": {
+    "viewWork": "استعرض أعمالي",
+    "downloadCv": "تحميل السيرة الذاتية",
+    "portraitAlt": "صورة شخصية لـ{name} ببدلة كحلية وربطة عنق"
+  },
+  "Sections": {
+    "about": "نبذة عني",
+    "experience": "الخبرات",
+    "projects": "المشاريع",
+    "skills": "المهارات",
+    "certifications": "الشهادات",
+    "education": "التعليم",
+    "languages": "اللغات",
+    "contact": "تواصل"
+  },
+  "Experience": {
+    "present": "حتى الآن"
+  },
+  "Projects": {
+    "featured": "مشروع مميّز",
+    "visit": "زيارة {name}",
+    "private": "مشروع خاص، بلا رابط عام"
+  },
+  "Certifications": {
+    "view": "عرض الشهادة",
+    "credential": "عرض الشارة على Credly",
+    "close": "إغلاق",
+    "issued": "صدرت في {date}"
+  },
+  "Contact": {
+    "closing": "لديك مشروع أو فرصة في ذهنك؟ لنتحدث.",
+    "email": "البريد الإلكتروني",
+    "linkedin": "LinkedIn",
+    "github": "GitHub",
+    "cv": "تحميل السيرة الذاتية"
+  },
+  "Globe": {
+    "label": "كرة أرضية تعرض المسار المهني: تونس، ثم مونتريال، ثم فرنسا، ثم مدينة الكويت",
+    "loading": "جارٍ تحميل كرة الرحلة"
+  },
+  "Footer": {
+    "copyright": "© {year} {name}",
+    "backToTop": "العودة إلى الأعلى"
+  },
+  "NotFound": {
+    "title": "الصفحة غير موجودة",
+    "body": "سلكت هذه الصفحة طريقًا آخر. بقية الرحلة ما زالت هنا.",
+    "home": "العودة إلى الصفحة الرئيسية"
+  }
+}

@@ -1,15 +1,24 @@
-import { type SiteMeta, type UiStrings } from "@/types/site";
+import { type Localized } from "@/types/localized";
 
-import { profile } from "./profile";
+export type SectionId =
+  "about" | "experience" | "projects" | "skills" | "certifications" | "contact";
 
-export const siteMeta: SiteMeta = {
-  locale: "en",
+export const site = {
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
-  title: `${profile.name} · ${profile.title}`,
-  description: profile.tagline,
-};
+} as const;
 
-export const uiStrings: UiStrings = {
-  skipToContent: "Skip to content",
-  underConstruction: "Portfolio in progress. Design direction comes next.",
+/** Page sections in reading order; the nav and the page both follow it. */
+export const sectionIds: readonly SectionId[] = [
+  "about",
+  "experience",
+  "projects",
+  "skills",
+  "certifications",
+  "contact",
+];
+
+export const siteDescription: Localized<string> = {
+  en: "Software engineer based in Kuwait. Modern, scalable web applications built end to end, with experience across Kuwait, France, Canada and Tunisia, including EY.",
+  fr: "Ingénieur logiciel basé au Koweït. Des applications web modernes et évolutives, conçues de bout en bout, avec une expérience au Koweït, en France, au Canada et en Tunisie, notamment chez EY.",
+  ar: "مهندس برمجيات مقيم في الكويت. تطبيقات ويب حديثة وقابلة للتوسّع تُبنى من البداية إلى النهاية، مع خبرة في الكويت وفرنسا وكندا وتونس، من بينها EY.",
 };

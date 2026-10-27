@@ -15,7 +15,7 @@ test.describe("smoke", () => {
     await page.goto("/");
 
     await expect(page.locator("h1")).toHaveCount(1);
-    await expect(page.locator("h1")).toHaveText(profile.name);
+    await expect(page.locator("h1")).toHaveText(profile.en.name);
     expect(consoleErrors).toEqual([]);
   });
 

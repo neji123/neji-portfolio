@@ -10,7 +10,7 @@
 Build a **frontend-only**, fast, accessible and memorable personal portfolio that makes recruiters and clients in Kuwait, the Gulf, and Europe want to contact me.
 
 - **Audience:** tech recruiters, engineering managers, potential freelance clients.
-- **First impression (5 seconds):** "Senior-quality Full Stack Developer, international experience, ships real products."
+- **First impression (5 seconds):** "Senior-quality software engineer, international experience, ships real products."
 - **Primary action:** contact me (email / LinkedIn / download CV).
 - **Languages:** trilingual, **English (default) / French / Arabic**, with a true RTL experience for Arabic (see section 7, *Internationalization*).
 
@@ -93,6 +93,15 @@ Also find and install or reference (verify the official source first): **awesome
 If you have a better and still unique 3D idea that fits a Full Stack Developer, propose it at Checkpoint 1 **before** building.
 
 ---
+
+## 4b. Chosen art direction: Night Route (Phase 1 decision)
+
+- **World:** the career is a night flight seen from altitude. The globe is the ground the first screen stands on, not a widget beside the copy.
+- **Palette:** night ground `#0C1A2C`, raised surface `#14263D`, chart-white ink `#EEF0EA`, muted `#A9B4C2`; route magenta `#F0609E` (on paper `#B4246B`) is used **only** for the route and the contact action. Reading sections switch to the daylight "chart paper" field (`#EEF0EA` ground, navy ink).
+- **Type:** Archivo (widened for display, normal width for text) for EN/FR; Alexandria for Arabic. Arabic is never letter-spaced and gets taller line heights.
+- **The experience must be original and immersive 3D, not a static page (top requirement):** the React Three Fiber globe is the backbone. Route arcs draw themselves on scroll, the camera travels Tunis → Montréal → France → Kuwait City, and each stop reveals its experience. Lenis smooth scroll everywhere, synced with GSAP ScrollTrigger. Purposeful motion in every section: split line/word text reveals, pinned scroll sequences, parallax depth, magnetic buttons, project-card 3D tilt or spotlight, animated counters, section/page transitions, an animated language switch.
+- **Component sources (inspiration, adapted to our tokens and TypeScript strict, never pasted blindly):** reactbits.dev, ui.aceternity.com, animata.design, hover.dev, 21st.dev.
+- **Constraints on all motion:** lazy-load the 3D, cap DPR on mobile, pause rendering off-screen, give every animation a calm `prefers-reduced-motion` alternative, and make all of it work in RTL.
 
 ## 5. Architecture & clean code rules
 
@@ -198,8 +207,11 @@ About · Experience · Projects · Skills · Certifications · Contact · **[Dow
 - Switching keeps the visitor on the same page and stores the choice in a cookie.
 
 ### Hero
-- **Name:** Mohamed Neji Benzarti
-- **Title:** Full Stack Developer
+- **Name:** Mohamed Neji Benzarti · Arabic: **محمد الناجي البنزرتي** (this exact spelling everywhere in Arabic, metadata and JSON-LD included)
+- **Title:**
+  - EN: Software Engineer, Web Development
+  - FR: Ingénieur logiciel spécialisé en développement web
+  - AR: مهندس برمجيات متخصص في إنشاء المواقع الإلكترونية (long: the hero sets it on 1–2 balanced lines at a readable size, never shrunk)
 - **Tagline:** I build modern, scalable web applications that turn ideas into reliable products.
 - **Location badge:** Based in Kuwait · Open to opportunities
 - **CTAs:** View my work · Download CV
@@ -296,7 +308,7 @@ The CV PDF in `public/cv/` is provided by the owner and is never edited by the a
 | Phase | Work | Checkpoint (stop and show me) |
 |---|---|---|
 | **0. Setup** | Install skills, read SKILL.md files, create the Next.js project, tooling (ESLint, Prettier, Husky, Playwright), folder structure | Summary of installed skills and the structure |
-| **1. Design direction** | Use refero/awesome-design + taste/impeccable: propose **2 art directions** (palette, Latin + Arabic typography, mood, 3D style) as a moodboard built as pages in the project, each shown in **EN and AR** | **I choose one** |
+| **1. Design direction** ✅ | Use refero/awesome-design + taste/impeccable: propose **2 art directions** (palette, Latin + Arabic typography, mood, 3D style) as a moodboard built as pages in the project, each shown in **EN and AR** | **I choose one** |
 | **2. Foundations** | Design tokens, fonts (Latin + Arabic), next-intl routing + messages + missing-key check, layout, header/footer + language switcher, Lenis + GSAP setup (RTL-aware), `content/` typed per locale, base `ui/` components | Screenshots desktop + mobile × 3 locales |
 | **3. Sections** | Hero, About, Experience, Projects, Skills, Certifications, Contact (static first, no animation yet) | Screenshots of each section |
 | **4. 3D Journey Globe** | Build, lazy-load, fallback, performance | Video/GIF + performance numbers |
