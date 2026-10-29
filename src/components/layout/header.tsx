@@ -8,6 +8,7 @@ import { type Locale } from "@/i18n/locales";
 
 import { LanguageSwitcher } from "./language-switcher";
 import { MobileMenu, type NavItem } from "./mobile-menu";
+import { PrimaryNav } from "./primary-nav";
 
 type HeaderProps = {
   locale: Locale;
@@ -30,20 +31,7 @@ export async function Header({ locale }: HeaderProps) {
         >
           {name}
         </a>
-        <nav aria-label={tHeader("primaryNav")} className="hidden lg:block">
-          <ul className="flex gap-7">
-            {items.map((item) => (
-              <li key={item.href}>
-                <a
-                  href={item.href}
-                  className="inline-flex min-h-11 items-center type-small decoration-route decoration-2 underline-offset-8 hover:underline"
-                >
-                  {item.label}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </nav>
+        <PrimaryNav items={items} label={tHeader("primaryNav")} className="hidden lg:block" />
         <div className="flex items-center gap-2">
           <LanguageSwitcher className="hidden lg:block" />
           <ButtonLink href={contact.cv} download className="hidden sm:inline-flex">

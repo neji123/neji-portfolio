@@ -106,7 +106,12 @@ export function JourneyGlobe({
         hoveredStop={hoveredStop}
         reducedMotion={reducedMotion}
       />
-      <GlobeLabelProjector stops={stops} nodes={labelNodes} driver={driver} />
+      <GlobeLabelProjector
+        stops={stops}
+        nodes={labelNodes}
+        driver={driver}
+        reducedMotion={reducedMotion}
+      />
     </Canvas>
   );
 }

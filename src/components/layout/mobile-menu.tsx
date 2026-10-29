@@ -1,13 +1,15 @@
 "use client";
 
 import { useLenis } from "lenis/react";
-import { type MouseEvent, useEffect, useId, useRef, useState } from "react";
+import { type CSSProperties, type MouseEvent, useEffect, useId, useRef, useState } from "react";
 
 import { HEADER_OFFSET, useScrollLock } from "@/components/motion/smooth-scroll";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { CloseIcon, DownloadIcon, MenuIcon } from "@/components/ui/icons";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
+import { cn } from "@/lib/cn";
 
+import { useActiveSection } from "./active-section";
 import { LanguageSwitcher } from "./language-switcher";
 
 export type NavItem = {
@@ -38,6 +40,7 @@ export function MobileMenu({
   const dialogId = useId();
   const lenis = useLenis();
   const reducedMotion = useReducedMotion();
+  const active = useActiveSection();
   useScrollLock(open);
 
   useEffect(() => {
@@ -96,17 +99,36 @@ export function MobileMenu({
           </div>
           <nav aria-label={menuLabel}>
             <ul className="flex flex-col gap-2">
-              {items.map((item) => (
-                <li key={item.href}>
-                  <a
-                    href={item.href}
-                    onClick={(event) => goTo(event, item.href)}
-                    className="inline-flex min-h-11 items-center py-1 type-head"
+              {items.map((item, index) => {
+                const current = item.href === `#${active}`;
+                return (
+                  <li
+                    key={item.href}
+                    className="menu-item"
+                    style={{ "--menu-index": index } as CSSProperties}
                   >
-                    {item.label}
-                  </a>
-                </li>
-              ))}
+                    {/* The section on screen: accent ink and the route's marker before it. */}
+                    <a
+                      href={item.href}
+                      aria-current={current ? "location" : undefined}
+                      onClick={(event) => goTo(event, item.href)}
+                      className={cn(
+                        "inline-flex min-h-11 items-center gap-3 py-1 type-head transition-colors duration-(--duration-fast) ease-(--ease-smooth-out)",
+                        current ? "text-accent" : "text-ink",
+                      )}
+                    >
+                      <span
+                        aria-hidden="true"
+                        className={cn(
+                          "size-2.5 shrink-0 rounded-full bg-accent transition-[opacity,scale] duration-(--duration-fast) ease-(--ease-smooth-out)",
+                          current ? "opacity-100" : "scale-50 opacity-0",
+                        )}
+                      />
+                      {item.label}
+                    </a>
+                  </li>
+                );
+              })}
             </ul>
           </nav>
           <div className="mt-auto flex flex-col items-start gap-6">

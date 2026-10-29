@@ -37,6 +37,7 @@
   --duration-quick: 150ms;
   --duration-fast: 250ms;
   --duration-medium: 450ms;
+  --duration-slow: 800ms;
   --ease-smooth-out: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-expo-out: cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -228,6 +229,14 @@
   /* Soft corners: the sky darkens towards the viewport edges, over the globe. */
   .globe-vignette {
     background: radial-gradient(130% 100% at 50% 45%, transparent 55%, rgb(7 17 30 / 0.55) 100%);
+  }
+
+  /* City labels: ink on the globe, lifted by a soft night shadow. No box, no border. */
+  .globe-label {
+    text-shadow:
+      0 1px 2px rgb(7 17 30 / 0.95),
+      0 0 10px rgb(7 17 30 / 0.85),
+      0 0 22px rgb(7 17 30 / 0.6);
   }
 
   /* A blurred pool of night behind a text block that crosses the globe: readable, unboxed. */

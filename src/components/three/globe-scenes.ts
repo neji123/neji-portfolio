@@ -99,6 +99,8 @@ export const REDUCED_PLACEMENT: Record<"wide" | "narrow", GlobePlacement> = {
 };
 
 export const GLOBE_SCENE_ATTRIBUTE = "data-globe-scene";
+/** Marks page elements no city label may cover (the hero name and title, call-to-action buttons). */
+export const GLOBE_AVOID_ATTRIBUTE = "data-globe-avoid";
 /** Tablets and up place the globe beside the content; phones place it above or below. */
 export const WIDE_LAYOUT_QUERY = "(min-width: 48rem)";
 /** Wide screens size the globe to the height, without letting it outgrow 62% of the width. */

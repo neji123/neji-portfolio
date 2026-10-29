@@ -160,11 +160,10 @@ export function GlobeBackdrop({ stops, route, label, hint, children }: GlobeBack
   const parallax = finePointer && !lowPower && !reducedMotion;
   const lenis = useLenis();
 
-  const anchors = useRef<(HTMLDivElement | null)[]>([]);
   const buttons = useRef<(HTMLButtonElement | null)[]>([]);
   const cards = useRef<(HTMLDivElement | null)[]>([]);
   const sizes = useRef<{ width: number; height: number }[]>([]);
-  const labelNodes = useMemo<LabelNodes>(() => ({ anchors, buttons, cards, sizes }), []);
+  const labelNodes = useMemo<LabelNodes>(() => ({ buttons, cards, sizes }), []);
 
   const home = stops.find((stop) => stop.current) ?? stops[0];
   const scene = scenes[sceneIndex] ?? "hero";
@@ -353,24 +352,17 @@ export function GlobeBackdrop({ stops, route, label, hint, children }: GlobeBack
         ) : null}
         <div aria-hidden="true" className="globe-vignette absolute inset-0" />
       </div>
-      {/* The city buttons float above the content, under the header, wherever the globe is. */}
       {load ? (
-        <div
-          role="group"
-          aria-label={label}
-          inert={!ready || !labelsShown}
-          className="pointer-events-none fixed inset-x-0 top-0 z-30 h-lvh"
-        >
-          <GlobeLabels
-            stops={stops}
-            nodes={labelNodes}
-            shown={ready && labelsShown}
-            activeStop={activeStop}
-            hint={hint}
-            onHover={setHoveredStop}
-            onSelect={handleSelect}
-          />
-        </div>
+        <GlobeLabels
+          stops={stops}
+          nodes={labelNodes}
+          label={label}
+          shown={ready && labelsShown}
+          activeStop={activeStop}
+          hint={hint}
+          onHover={setHoveredStop}
+          onSelect={handleSelect}
+        />
       ) : null}
     </>
   );

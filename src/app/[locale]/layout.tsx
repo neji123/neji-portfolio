@@ -73,10 +73,13 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
       <body className="min-h-svh">
         <NextIntlClientProvider>
           <SmoothScroll>
-            <SkipLink label={t("label")} />
-            <Header locale={typedLocale} />
-            {children}
-            <Footer locale={typedLocale} />
+            {/* Safety net against sideways scroll; clip (not hidden) keeps the sticky header working. */}
+            <div className="overflow-x-clip">
+              <SkipLink label={t("label")} />
+              <Header locale={typedLocale} />
+              {children}
+              <Footer locale={typedLocale} />
+            </div>
           </SmoothScroll>
         </NextIntlClientProvider>
         <script

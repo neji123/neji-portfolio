@@ -8,7 +8,6 @@ const CITY_ATTRIBUTE = "data-globe-city";
 
 /** The DOM nodes the projector moves each frame, one per stop, in stop order. */
 export type LabelNodes = {
-  anchors: RefObject<(HTMLDivElement | null)[]>;
   buttons: RefObject<(HTMLButtonElement | null)[]>;
   cards: RefObject<(HTMLDivElement | null)[]>;
   /** Each card's size, kept by a ResizeObserver so the projector never measures in the frame loop. */
@@ -18,6 +17,8 @@ export type LabelNodes = {
 type GlobeLabelsProps = {
   stops: readonly GlobeStop[];
   nodes: LabelNodes;
+  /** Accessible name of the group of city buttons. */
+  label: string;
   /** False in the scenes where the globe is only atmosphere: the labels fade out. */
   shown: boolean;
   /** The stop of the role being read keeps its label open. */
@@ -34,13 +35,15 @@ function accessibleName(stop: GlobeStop, hint: string): string {
 }
 
 /**
- * The city labels: one ordinary DOM layer over the page, moved by the globe's projector.
- * Each city is a real button: hover or focus opens its label (company and years), a click
- * goes to the role. On touch, the first tap opens, the second goes.
+ * The city labels, in two layers the globe's projector moves. The text sits under the page's
+ * own text (it is only ink on the globe, with a soft shadow, no box). The invisible city buttons
+ * sit above the content so they stay reachable: hover or focus opens a label (company and
+ * years), a click goes to the role. On touch, the first tap opens, the second goes.
  */
 export function GlobeLabels({
   stops,
   nodes,
+  label,
   shown,
   activeStop,
   hint,
@@ -51,7 +54,7 @@ export function GlobeLabels({
   const [focused, setFocused] = useState<JourneyStopId | null>(null);
   const [tapped, setTapped] = useState<JourneyStopId | null>(null);
   const pointerType = useRef("");
-  const { anchors, buttons, cards, sizes } = nodes;
+  const { buttons, cards, sizes } = nodes;
 
   // A tap anywhere else closes the tapped label.
   useEffect(() => {
@@ -89,82 +92,85 @@ export function GlobeLabels({
   };
 
   return (
-    <div
-      data-shown={shown}
-      className="pointer-events-none absolute inset-0 transition-opacity duration-500 data-[shown=false]:opacity-0 motion-reduce:transition-none"
-    >
-      {stops.map((stop, i) => {
-        const open = [hovered, focused, tapped, activeStop].includes(stop.id);
-        return (
-          // Physical top-left: the projector writes screen coordinates, which do not mirror in RTL.
-          // Hidden until the first projected frame places it.
-          <div
-            key={stop.id}
-            ref={(element) => {
-              anchors.current[i] = element;
-            }}
-            {...{ [CITY_ATTRIBUTE]: "" }}
-            data-facing="back"
-            data-open={open}
-            className="group/city absolute top-0 left-0 transition-opacity duration-300 data-[facing=back]:pointer-events-none data-[facing=back]:opacity-0 motion-reduce:transition-none"
-          >
-            <button
-              ref={(element) => {
-                buttons.current[i] = element;
-              }}
-              type="button"
-              tabIndex={-1}
-              className="absolute top-0 left-0 size-11 -translate-x-1/2 -translate-y-1/2 cursor-pointer rounded-full group-data-[facing=front]/city:pointer-events-auto in-data-[shown=false]:pointer-events-none!"
-              onPointerDown={(event) => {
-                pointerType.current = event.pointerType;
-              }}
-              onPointerEnter={(event) => {
-                if (event.pointerType === "mouse") hover(stop.id);
-              }}
-              onPointerLeave={(event) => {
-                if (event.pointerType === "mouse") hover(null);
-              }}
-              onFocus={() => setFocused(stop.id)}
-              onBlur={() => setFocused(null)}
-              onClick={() => {
-                const touch = pointerType.current === "touch" || pointerType.current === "pen";
-                pointerType.current = "";
-                if (touch && tapped !== stop.id) {
-                  setTapped(stop.id);
-                  return;
-                }
-                setTapped(null);
-                onSelect(stop.id);
-              }}
-            >
-              <span className="sr-only">{accessibleName(stop, hint)}</span>
-            </button>
-            {/*
-              The card sizes to its content; the projector slides it sideways to keep it inside
-              the viewport and flips it under the point near the top. The text follows the
-              document direction, so Arabic reads right to left.
-            */}
+    <>
+      {/* The words: under the sections (z-10), over the globe. Physical top-left: the projector writes screen coordinates. */}
+      <div
+        aria-hidden="true"
+        data-shown={shown}
+        className="pointer-events-none fixed inset-x-0 top-0 z-[5] h-lvh transition-opacity duration-(--duration-slow) ease-(--ease-smooth-out) data-[shown=false]:opacity-0 motion-reduce:transition-none"
+      >
+        {stops.map((stop, i) => {
+          const open = [hovered, focused, tapped, activeStop].includes(stop.id);
+          return (
+            // Hidden until the first projected frame places it. The text follows the document direction.
             <div
+              key={stop.id}
               ref={(element) => {
                 cards.current[i] = element;
               }}
-              aria-hidden="true"
-              className="pointer-events-none absolute bottom-4 left-0 w-max max-w-[calc(100vw-1.5rem)] bg-ground/85 px-2.5 py-1 text-center type-small text-ink"
+              data-facing="back"
+              data-clear="true"
+              data-flip="false"
+              data-open={open}
+              className="globe-label group/city absolute top-0 left-0 flex w-max max-w-[calc(100vw-1.5rem)] flex-col text-center type-small text-ink transition-opacity duration-(--duration-fast) ease-(--ease-smooth-out) data-[clear=false]:opacity-0 data-[facing=back]:opacity-0 data-[flip=true]:flex-col-reverse motion-reduce:transition-none"
             >
-              <p className="font-semibold">{stop.city}</p>
-              <div className="grid grid-rows-[0fr] opacity-0 transition-[grid-template-rows,opacity] duration-300 group-data-[open=true]/city:grid-rows-[1fr] group-data-[open=true]/city:opacity-100 motion-reduce:transition-none">
-                <div className="overflow-hidden">
-                  {stop.roles.map((role) => (
-                    <p key={role.id} className="text-muted">
-                      <bdi>{role.company}</bdi> · <bdi>{role.period}</bdi>
-                    </p>
-                  ))}
-                </div>
+              {/* Company and years open above the city name (below it when flipped), without moving it. */}
+              <div className="translate-y-1 opacity-0 transition-[opacity,translate] duration-(--duration-fast) ease-(--ease-smooth-out) group-data-[open=true]/city:translate-y-0 group-data-[open=true]/city:opacity-100 motion-reduce:translate-y-0 motion-reduce:transition-none">
+                {stop.roles.map((role) => (
+                  <p key={role.id} className="text-muted">
+                    <bdi>{role.company}</bdi> · <bdi>{role.period}</bdi>
+                  </p>
+                ))}
               </div>
+              <p className="font-semibold">{stop.city}</p>
             </div>
-          </div>
-        );
-      })}
-    </div>
+          );
+        })}
+      </div>
+      {/* The buttons: above the content, under the header, so a city can always be reached. */}
+      <div
+        role="group"
+        aria-label={label}
+        inert={!shown}
+        className="pointer-events-none fixed inset-x-0 top-0 z-30 h-lvh"
+      >
+        {stops.map((stop, i) => (
+          <button
+            key={stop.id}
+            ref={(element) => {
+              buttons.current[i] = element;
+            }}
+            {...{ [CITY_ATTRIBUTE]: "" }}
+            type="button"
+            tabIndex={-1}
+            data-reachable="false"
+            className="absolute top-0 left-0 size-11 cursor-pointer rounded-full data-[reachable=false]:invisible data-[reachable=true]:pointer-events-auto"
+            onPointerDown={(event) => {
+              pointerType.current = event.pointerType;
+            }}
+            onPointerEnter={(event) => {
+              if (event.pointerType === "mouse") hover(stop.id);
+            }}
+            onPointerLeave={(event) => {
+              if (event.pointerType === "mouse") hover(null);
+            }}
+            onFocus={() => setFocused(stop.id)}
+            onBlur={() => setFocused(null)}
+            onClick={() => {
+              const touch = pointerType.current === "touch" || pointerType.current === "pen";
+              pointerType.current = "";
+              if (touch && tapped !== stop.id) {
+                setTapped(stop.id);
+                return;
+              }
+              setTapped(null);
+              onSelect(stop.id);
+            }}
+          >
+            <span className="sr-only">{accessibleName(stop, hint)}</span>
+          </button>
+        ))}
+      </div>
+    </>
   );
 }

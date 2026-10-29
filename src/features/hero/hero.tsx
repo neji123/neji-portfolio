@@ -2,7 +2,7 @@ import { getTranslations } from "next-intl/server";
 
 import { Magnetic } from "@/components/motion/magnetic";
 import { WordReveal } from "@/components/motion/word-reveal";
-import { GLOBE_SCENE_ATTRIBUTE } from "@/components/three/globe-scenes";
+import { GLOBE_AVOID_ATTRIBUTE, GLOBE_SCENE_ATTRIBUTE } from "@/components/three/globe-scenes";
 import { ButtonLink } from "@/components/ui/button";
 import { ArrowIcon, DownloadIcon } from "@/components/ui/icons";
 import { contact } from "@/content/contact";
@@ -16,6 +16,8 @@ type HeroProps = {
 export async function Hero({ locale }: HeroProps) {
   const t = await getTranslations({ locale, namespace: "Hero" });
   const person = profile[locale];
+  // The globe's city labels step aside from the name, the title and the actions.
+  const avoid = { [GLOBE_AVOID_ATTRIBUTE]: "" };
 
   return (
     <section
@@ -29,17 +31,22 @@ export async function Hero({ locale }: HeroProps) {
           as="h1"
           id="hero-title"
           text={person.name}
-          className="type-display text-balance"
+          avoidGlobe
+          className="w-fit type-display text-balance"
         />
         {/* The long Arabic and French titles break onto two balanced lines instead of shrinking. */}
         <div className="rise-in flex flex-col gap-3 [animation-delay:380ms]">
-          <p className="max-w-[34ch] type-lead font-medium text-balance">{person.title}</p>
-          <p className="max-w-[min(46ch,34rem)] type-body">{person.tagline}</p>
-          <p className="type-body text-muted">
+          <p {...avoid} className="w-fit max-w-[34ch] type-lead font-medium text-balance">
+            {person.title}
+          </p>
+          <p {...avoid} className="w-fit max-w-[min(46ch,34rem)] type-body">
+            {person.tagline}
+          </p>
+          <p {...avoid} className="w-fit type-body text-muted">
             {person.location} · {person.availability}
           </p>
         </div>
-        <div className="rise-in flex flex-wrap gap-3 pt-2 [animation-delay:520ms]">
+        <div {...avoid} className="rise-in flex w-fit flex-wrap gap-3 pt-2 [animation-delay:520ms]">
           <Magnetic>
             <ButtonLink href="#projects" variant="primary" size="lg">
               {t("viewWork")}

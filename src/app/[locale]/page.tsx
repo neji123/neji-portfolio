@@ -2,6 +2,8 @@ import { notFound } from "next/navigation";
 import { hasLocale } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
 
+import { ScrollSpy } from "@/components/layout/active-section";
+import { sectionIds } from "@/content/site";
 import { AboutSection } from "@/features/about/about-section";
 import { CertificationsSection } from "@/features/certifications/certifications-section";
 import { ContactSection } from "@/features/contact/contact-section";
@@ -22,6 +24,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
   // One night for the whole page: the globe behind it moves from section to section.
   return (
     <main id="main">
+      <ScrollSpy ids={sectionIds} />
       <JourneyBackdrop locale={locale} />
       <Hero locale={locale} />
       <AboutSection locale={locale} />

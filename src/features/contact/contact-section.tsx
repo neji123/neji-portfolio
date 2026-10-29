@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 
 import { Magnetic } from "@/components/motion/magnetic";
 import { Reveal } from "@/components/motion/reveal";
+import { GLOBE_AVOID_ATTRIBUTE } from "@/components/three/globe-scenes";
 import { ButtonLink } from "@/components/ui/button";
 import { DownloadIcon, ExternalIcon } from "@/components/ui/icons";
 import { Section } from "@/components/ui/section";
@@ -15,6 +16,8 @@ type ContactSectionProps = {
 
 export async function ContactSection({ locale }: ContactSectionProps) {
   const t = await getTranslations({ locale, namespace: "Contact" });
+  // The globe's Kuwait City label steps aside from the contact actions.
+  const avoid = { [GLOBE_AVOID_ATTRIBUTE]: "" };
 
   return (
     <Section id="contact" labelledBy="contact-heading" scene="contact" className="pb-0">
@@ -26,6 +29,7 @@ export async function ContactSection({ locale }: ContactSectionProps) {
           {/* The contact action owns the accent. The address stays left to right in Arabic. */}
           <Magnetic>
             <a
+              {...avoid}
               href={`mailto:${contact.email}`}
               aria-label={`${t("email")}: ${contact.email}`}
               className="inline-flex min-h-11 items-center type-lead font-semibold break-all text-accent underline decoration-2 underline-offset-[0.25em] hover:decoration-4 md:type-head"
@@ -33,7 +37,7 @@ export async function ContactSection({ locale }: ContactSectionProps) {
               <span dir="ltr">{contact.email}</span>
             </a>
           </Magnetic>
-          <div className="flex flex-wrap gap-3">
+          <div {...avoid} className="flex w-fit flex-wrap gap-3">
             <ButtonLink href={contact.linkedin} target="_blank" rel="noopener noreferrer" size="lg">
               {t("linkedin")}
               <ExternalIcon />

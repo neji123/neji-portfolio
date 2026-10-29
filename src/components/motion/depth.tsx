@@ -5,8 +5,12 @@ import { type ReactNode, useRef } from "react";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { EASE, FULL_MOTION_QUERY } from "@/lib/motion";
 
-/** The tilt a section starts from as it rises out of the night, scrubbed with the scroll. */
-const ENTER = { rotationX: 9, z: -140, y: 48, opacity: 0.35 } as const;
+/**
+ * The tilt a section starts from as it rises out of the night, scrubbed with the scroll.
+ * It leans back (negative rotateX about the top edge) and sits deeper: everything only
+ * recedes, so no part is magnified past the viewport and nothing scrolls sideways.
+ */
+const ENTER = { rotationX: -8, z: -140, y: 48, opacity: 0.35 } as const;
 
 type DepthProps = {
   children: ReactNode;
