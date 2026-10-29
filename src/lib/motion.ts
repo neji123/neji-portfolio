@@ -7,6 +7,8 @@ export const DURATION = {
   medium: 0.45,
   slow: 0.8,
   reveal: 1.1,
+  /** The current stop breathing (globe ring, timeline marker). */
+  pulse: 2.4,
 } as const;
 
 export const EASE = {

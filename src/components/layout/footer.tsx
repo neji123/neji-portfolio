@@ -33,16 +33,19 @@ export async function Footer({ locale }: FooterProps) {
                 href={link.href}
                 {...(link.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
                 {...(link.download ? { download: true } : {})}
-                className="inline-flex min-h-11 items-center type-body underline decoration-surface-strong decoration-2 underline-offset-8 hover:decoration-route"
+                className="inline-flex min-h-11 items-center type-body"
               >
-                {link.label}
+                <span className="link-line">{link.label}</span>
               </a>
             </li>
           ))}
         </ul>
         <div className="flex items-center gap-8 type-small text-muted">
           <p>{t("copyright", { year, name })}</p>
-          <a href="#top" className="inline-flex min-h-11 items-center hover:text-ink">
+          <a
+            href="#top"
+            className="inline-flex min-h-11 items-center transition-colors duration-(--duration-fast) ease-(--ease-smooth-out) hover:text-ink"
+          >
             {t("backToTop")}
           </a>
         </div>

@@ -6,6 +6,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
 import { SkipLink } from "@/components/layout/skip-link";
+import { IntroGate, MotionGate } from "@/components/motion/motion-gate";
 import { SmoothScroll } from "@/components/motion/smooth-scroll";
 import { profile } from "@/content/profile";
 import { site, siteDescription } from "@/content/site";
@@ -69,9 +70,13 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
       lang={typedLocale}
       dir={directionFor(typedLocale)}
       className={`${archivo.variable} ${alexandria.variable}`}
+      // The intro gate and the language switch write data attributes on <html> before React hydrates.
+      suppressHydrationWarning
     >
       <body className="min-h-svh">
+        <IntroGate />
         <NextIntlClientProvider>
+          <MotionGate />
           <SmoothScroll>
             {/* Safety net against sideways scroll; clip (not hidden) keeps the sticky header working. */}
             <div className="overflow-x-clip">

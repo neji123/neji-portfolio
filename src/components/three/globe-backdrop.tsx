@@ -319,7 +319,7 @@ export function GlobeBackdrop({ stops, route, label, hint, children }: GlobeBack
           aria-hidden={ready || undefined}
           style={frameStyle()}
           className={cn(
-            "globe-frame transition-opacity duration-700 ease-(--ease-smooth-out)",
+            "globe-frame transition-opacity duration-(--duration-slow) ease-(--ease-smooth-out)",
             ready && "opacity-0!",
           )}
         >
@@ -329,7 +329,7 @@ export function GlobeBackdrop({ stops, route, label, hint, children }: GlobeBack
           <div
             aria-hidden="true"
             className={cn(
-              "absolute inset-0 opacity-0 transition-opacity duration-[1100ms] ease-(--ease-expo-out) motion-reduce:duration-500",
+              "absolute inset-0 opacity-0 transition-opacity duration-(--duration-reveal) ease-(--ease-expo-out) motion-reduce:duration-(--duration-medium)",
               ready && "opacity-100",
             )}
           >

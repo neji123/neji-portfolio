@@ -5,6 +5,7 @@ import { useFrame } from "@react-three/fiber";
 import { type ComponentRef, type RefObject, useMemo, useRef } from "react";
 import { DoubleSide, type Mesh, type MeshBasicMaterial, Vector3 } from "three";
 
+import { DURATION } from "@/lib/motion";
 import { ARC_SEGMENTS, routeArc } from "@/lib/route-arc";
 import { type GlobeStop, type JourneyLeg, type JourneyStopId } from "@/types/journey";
 
@@ -15,7 +16,7 @@ import { GLOBE_PALETTE } from "./globe-shaders";
 
 /** Seconds: the route draws itself leg by leg once the globe appears. */
 const DRAW = { delay: 0.5, perLeg: 1.1, stagger: 0.85 } as const;
-const PULSE_PERIOD = 2.4;
+const PULSE_PERIOD = DURATION.pulse;
 const PULSE_SCALE = { from: 0.6, to: 1.8, still: 1.2 } as const;
 const PULSE_OPACITY = { from: 0.9, still: 0.6 } as const;
 const LINE_WIDTH = 2.5;

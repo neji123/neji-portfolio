@@ -32,9 +32,12 @@ export async function ContactSection({ locale }: ContactSectionProps) {
               {...avoid}
               href={`mailto:${contact.email}`}
               aria-label={`${t("email")}: ${contact.email}`}
-              className="inline-flex min-h-11 items-center type-lead font-semibold break-all text-accent underline decoration-2 underline-offset-[0.25em] hover:decoration-4 md:type-head"
+              className="inline-flex min-h-11 items-center type-lead font-semibold break-all text-accent md:type-head"
             >
-              <span dir="ltr">{contact.email}</span>
+              {/* The line draws in from the address's own start: it is always left to right. */}
+              <span dir="ltr" className="link-line [--line-weight:3px]">
+                {contact.email}
+              </span>
             </a>
           </Magnetic>
           <div {...avoid} className="flex w-fit flex-wrap gap-3">

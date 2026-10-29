@@ -331,9 +331,14 @@ Commit at the end of each phase with a Conventional Commit message.
 | 3. Sections | ✅ Done | All sections built in 3 locales. Owner review: menu keeps the 6 links (no Education/Languages); project cards keep the 3D tilt, no spotlight |
 | 4. 3D Journey Globe | ✅ Done | See below |
 | 4b. 3D rework | ✅ Done | One persistent canvas, continuous dark page (see below) |
-| 5. Motion & polish | ⏭ Next | |
-| 6. Audit & tests | ⏳ | Playwright/axe/Lighthouse not run yet (owner rule: only lint + typecheck + build until asked) |
+| 5. Motion & polish | ✅ Done | Fixes + motion & polish (see below) |
+| 6. Audit & tests | ⏭ Next | |
 | 7. Deploy | ⏳ | Repo: github.com/neji123/neji-portfolio (`main`) |
+
+**Phase 5 in short**:
+- Fixes: globe labels are text with a soft shadow (no box); the words sit under the page text (z-5) while the invisible city buttons stay above it (z-30), and both flip or hide away from anything marked `data-globe-avoid` (hero name, title, actions; contact actions). Sideways scroll came from the section entrance tilt magnifying long sections; they now lean back, plus `overflow-x: clip` on the page wrapper. Scrollspy (`components/layout/active-section.ts`): one accent line slides under the menu item of the section being read, `aria-current="location"`, mirrored in the mobile menu.
+- One motion token set in `globals.css` (`--duration-quick/fast/medium/slow/reveal/pulse`, `--ease-smooth-out/expo-out`, `--distance-*`, `--inline-sign` for RTL), mirrored in `src/lib/motion.ts`; no ad-hoc durations remain.
+- Language switch: the page steps back toward the reading start and the new language arrives from the reading end (`components/motion/motion-gate.tsx`); globe and scroll position untouched. Mobile menu drops in with staggered links, closes quicker. First-load intro (name, title, globe together) plays once per visit (session gate script before first paint). Micro-details: icons nudge toward where they lead, link lines draw from the reading start, cards lift with an opacity-faded shadow, hairline image outlines, optical button padding, press scale on the language pills. Reduced motion: no slides, nudges or intro.
 
 **Phase 4b in short** (supersedes the two-instance Phase 4 layout):
 - One fixed canvas behind the page: `globe-backdrop.tsx` (rendered once by `features/journey/journey-backdrop.tsx`) holds the server-rendered SVG fallback at the hero placement, lazy-loads `journey-globe.tsx` (`next/dynamic`, `ssr: false`) after load + idle, and stops rendering while the tab is hidden. DPR `[1, 1.5]`; phones get fewer dots and stars.

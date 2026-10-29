@@ -3,6 +3,8 @@
 import { useLocale, useTranslations } from "next-intl";
 import { type MouseEvent } from "react";
 
+import { beginLocaleSwitch } from "@/components/motion/motion-gate";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { type Locale, localeMeta, locales } from "@/i18n/locales";
 import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { cn } from "@/lib/cn";
@@ -21,12 +23,17 @@ export function LanguageSwitcher({ className, onNavigate }: LanguageSwitcherProp
   const currentLocale = useLocale();
   const pathname = usePathname();
   const router = useRouter();
+  const reducedMotion = useReducedMotion();
 
   function handleClick(event: MouseEvent<HTMLAnchorElement>, target: Locale) {
     event.preventDefault();
     if (target === currentLocale) return;
     onNavigate?.();
-    router.replace(`${pathname}${window.location.hash}`, { locale: target, scroll: false });
+    const go = () =>
+      router.replace(`${pathname}${window.location.hash}`, { locale: target, scroll: false });
+    // The page steps back first (see [data-locale-switch]); reduced motion just switches.
+    if (reducedMotion) go();
+    else window.setTimeout(go, beginLocaleSwitch());
   }
 
   return (
@@ -48,7 +55,7 @@ export function LanguageSwitcher({ className, onNavigate }: LanguageSwitcherProp
                 onClick={(event) => handleClick(event, code)}
                 className={cn(
                   "inline-flex min-h-11 items-center gap-2 rounded-full px-3 type-small font-medium",
-                  "transition-colors duration-(--duration-quick) ease-smooth-out",
+                  "transition-[background-color,color,scale] duration-(--duration-quick) ease-smooth-out active:scale-96 motion-reduce:active:scale-100",
                   isCurrent ? "bg-ink text-ground" : "hover:bg-surface",
                 )}
               >

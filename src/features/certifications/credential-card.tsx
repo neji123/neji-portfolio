@@ -15,7 +15,7 @@ type CredentialCardProps = {
 export function CredentialCard({ id, name, issuer, mark, url, linkLabel }: CredentialCardProps) {
   const titleId = `${id}-title`;
   return (
-    <article aria-labelledby={titleId} className="flex w-full flex-col bg-surface">
+    <article aria-labelledby={titleId} className="card-lift flex w-full flex-col bg-surface">
       <div
         aria-hidden="true"
         className="flex aspect-[4/3] items-center justify-center bg-surface-strong type-display"

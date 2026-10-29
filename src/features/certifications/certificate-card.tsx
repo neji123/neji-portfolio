@@ -61,7 +61,7 @@ export function CertificateCard({
   }
 
   return (
-    <article aria-labelledby={titleId} className="flex w-full flex-col bg-surface">
+    <article aria-labelledby={titleId} className="card-lift flex w-full flex-col bg-surface">
       <button
         type="button"
         onClick={show}
@@ -75,7 +75,7 @@ export function CertificateCard({
           height={image.height}
           alt=""
           sizes="(min-width: 1024px) 30vw, (min-width: 768px) 45vw, 90vw"
-          className="h-full w-full object-contain transition-[scale] duration-(--duration-medium) ease-expo-out group-hover:scale-[1.03] motion-reduce:transition-none"
+          className="image-outline h-full w-full object-contain transition-[scale] duration-(--duration-medium) ease-expo-out group-hover:scale-[1.03] motion-reduce:transition-none"
         />
       </button>
       <div className="flex flex-1 flex-col gap-2 p-6">

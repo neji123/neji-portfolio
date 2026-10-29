@@ -18,8 +18,9 @@ export const buttonVariants = cva(
         ghost: "text-ink hover:bg-surface",
       },
       size: {
-        md: "min-h-11 px-5 type-small",
-        lg: "min-h-12 px-6 text-base",
+        // Optical balance: the side carrying an icon reads heavier, so it gets less padding.
+        md: "min-h-11 px-5 type-small has-[>svg:first-child]:ps-4 has-[>svg:last-child]:pe-4",
+        lg: "min-h-12 px-6 text-base has-[>svg:first-child]:ps-5 has-[>svg:last-child]:pe-5",
       },
     },
     defaultVariants: { variant: "secondary", size: "md" },
