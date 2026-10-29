@@ -31,7 +31,13 @@ export function Tilt({ children, maxTilt = DEFAULT_MAX_TILT_DEG, className }: Ti
         const tween = { duration: DURATION.medium, ease: EASE.smooth };
         const rotateX = gsap.quickTo(element, "rotationX", tween);
         const rotateY = gsap.quickTo(element, "rotationY", tween);
-        const scale = gsap.quickTo(element, "scale", tween);
+        // quickTo needs real properties: "scale" is a shorthand it cannot reset.
+        const scaleX = gsap.quickTo(element, "scaleX", tween);
+        const scaleY = gsap.quickTo(element, "scaleY", tween);
+        const scale = (value: number) => {
+          scaleX(value);
+          scaleY(value);
+        };
 
         const onMove = (event: PointerEvent) => {
           const box = element.getBoundingClientRect();

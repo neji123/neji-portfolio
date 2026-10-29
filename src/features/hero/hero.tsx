@@ -69,6 +69,7 @@ export async function Hero({ locale }: HeroProps) {
       <div className="pointer-events-none relative mt-auto h-[clamp(15rem,64vw,22rem)] md:absolute md:inset-0 md:h-auto">
         {/* The static globe paints with the page; the 3D one takes over once the page is idle. */}
         <GlobeStage
+          key={locale}
           mode="hero"
           stops={globeStops(locale, tExperience("present"))}
           route={journeyRoute}

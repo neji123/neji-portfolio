@@ -23,6 +23,9 @@ export function CountUp({ value, className }: CountUpProps) {
       const element = ref.current;
       if (!element) return;
       const mm = gsap.matchMedia();
+      // Write into React's own text node, never replace it, so React can still update it.
+      const text = element.firstChild;
+      if (!(text instanceof Text)) return;
       mm.add(FULL_MOTION_QUERY, () => {
         const counter = { current: 0 };
         gsap.to(counter, {
@@ -31,12 +34,12 @@ export function CountUp({ value, className }: CountUpProps) {
           ease: EASE.out,
           scrollTrigger: { trigger: element, start: SCROLL_START, once: true },
           onUpdate: () => {
-            element.textContent = formatter.format(Math.round(counter.current));
+            text.nodeValue = formatter.format(Math.round(counter.current));
           },
         });
-        element.textContent = formatter.format(0);
+        text.nodeValue = formatter.format(0);
         return () => {
-          element.textContent = formatter.format(value);
+          text.nodeValue = formatter.format(value);
         };
       });
       return () => mm.revert();

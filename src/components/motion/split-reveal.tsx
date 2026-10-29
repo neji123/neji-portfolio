@@ -1,5 +1,6 @@
 "use client";
 
+import { useLocale } from "next-intl";
 import { type ReactNode, useRef } from "react";
 
 import { gsap, SplitText, useGSAP } from "@/lib/gsap";
@@ -15,8 +16,15 @@ type SplitRevealProps = {
  * Splits into lines only (lines break between words), so Arabic keeps its joined letters.
  * Re-splits on resize and font load (autoSplit). Without JS or with reduced motion the text
  * simply stays as authored.
+ *
+ * SplitText moves the nodes React rendered, so React must never update them in place: a new
+ * locale remounts the block, and the unmount reverts the split before React removes it.
  */
-export function SplitReveal({ children, className }: SplitRevealProps) {
+export function SplitReveal(props: SplitRevealProps) {
+  return <SplitRevealBlock key={useLocale()} {...props} />;
+}
+
+function SplitRevealBlock({ children, className }: SplitRevealProps) {
   const ref = useRef<HTMLDivElement>(null);
 
   useGSAP(

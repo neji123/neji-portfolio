@@ -93,6 +93,7 @@ export async function ExperienceSection({ locale }: ExperienceSectionProps) {
             className="field-night sticky top-header z-10 order-first -mx-gutter h-[min(32svh,17rem)] overflow-hidden bg-ground lg:top-[calc(var(--header-height)+1rem)] lg:order-none lg:mx-0 lg:h-[min(calc(100svh-var(--header-height)-4rem),44rem)]"
           >
             <GlobeStage
+              key={locale}
               mode="journey"
               stops={globeStops(locale, t("present"))}
               route={journeyRoute}
