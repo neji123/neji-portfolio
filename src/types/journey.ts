@@ -22,12 +22,3 @@ export type GlobeStop = JourneyStop & {
   city: string;
   roles: readonly GlobeRole[];
 };
-
-/** "hero": the planet under the first screen. "journey": the window beside the experience timeline. */
-export type GlobeMode = "hero" | "journey";
-
-export type GlobeView = {
-  center: LatLon;
-  /** Share of the view's shorter side that the globe's disc fills. */
-  disc: number;
-};

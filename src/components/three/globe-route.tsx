@@ -2,13 +2,15 @@
 
 import { Line } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
-import { type ComponentRef, useMemo, useRef } from "react";
+import { type ComponentRef, type RefObject, useMemo, useRef } from "react";
 import { DoubleSide, type Mesh, type MeshBasicMaterial, Vector3 } from "three";
 
 import { ARC_SEGMENTS, routeArc } from "@/lib/route-arc";
 import { type GlobeStop, type JourneyLeg, type JourneyStopId } from "@/types/journey";
 
+import { type GlobeDriver } from "./globe-driver";
 import { dampFactor, toVector3 } from "./globe-math";
+import { createGlobeLook, PLACEMENT_DAMPING, stepLook } from "./globe-scenes";
 import { GLOBE_PALETTE } from "./globe-shaders";
 
 /** Seconds: the route draws itself leg by leg once the globe appears. */
@@ -28,6 +30,7 @@ type LineRef = ComponentRef<typeof Line>;
 type GlobeRouteProps = {
   stops: readonly GlobeStop[];
   route: readonly JourneyLeg[];
+  driver: RefObject<GlobeDriver>;
   /** The stop of the role being read, which the route emphasises. */
   activeStop: JourneyStopId | null;
   hoveredStop: JourneyStopId | null;
@@ -42,17 +45,25 @@ function clamp01(t: number): number {
   return Math.min(1, Math.max(0, t));
 }
 
+/**
+ * Two copies of every leg. The forward route (Tunis → Kuwait City) draws itself once when the
+ * globe appears. The timeline reads from the present back to the start, so in Experience a
+ * reversed copy draws with the scroll instead, from Kuwait City back to Tunis.
+ */
 export function GlobeRoute({
   stops,
   route,
+  driver,
   activeStop,
   hoveredStop,
   reducedMotion,
 }: GlobeRouteProps) {
-  const lines = useRef<(LineRef | null)[]>([]);
+  const forward = useRef<(LineRef | null)[]>([]);
+  const backward = useRef<(LineRef | null)[]>([]);
   const markers = useRef<(Mesh | null)[]>([]);
   const ring = useRef<Mesh>(null);
   const startedAt = useRef<number | null>(null);
+  const look = useRef(createGlobeLook());
 
   const legs = useMemo(() => {
     const byId = new Map(stops.map((stop) => [stop.id, stop]));
@@ -63,7 +74,15 @@ export function GlobeRoute({
       const points = routeArc(from, to, index).map(({ point, altitude }) =>
         toVector3(point, 1 + altitude),
       );
-      return [{ key: `${fromId}-${toId}`, from: fromId, to: toId, points }];
+      return [
+        {
+          key: `${fromId}-${toId}`,
+          from: fromId,
+          to: toId,
+          points,
+          reversed: [...points].reverse(),
+        },
+      ];
     });
   }, [stops, route]);
 
@@ -78,17 +97,44 @@ export function GlobeRoute({
     startedAt.current ??= state.clock.elapsedTime;
     const elapsed = state.clock.elapsedTime - startedAt.current;
     const k = reducedMotion ? 1 : dampFactor(DAMPING, delta);
+    const input = driver.current;
+    const { dim, flightWeight } = stepLook(
+      look.current,
+      input.scenes,
+      input.scene,
+      input.wide,
+      reducedMotion,
+      dampFactor(PLACEMENT_DAMPING, delta),
+    );
+    // Share of the timeline read so far, spread over the legs from the last one back.
+    const read = reducedMotion
+      ? 1
+      : clamp01((input.flight + 1) / Math.max(input.flightPath.length, 1));
+    const readLegs = read * legs.length;
 
     legs.forEach((leg, i) => {
-      const line = lines.current[i];
-      if (!line) return;
-      const drawn = reducedMotion
-        ? 1
-        : easeOutCubic(clamp01((elapsed - DRAW.delay - i * DRAW.stagger) / DRAW.perLeg));
-      line.geometry.instanceCount = Math.round(drawn * ARC_SEGMENTS);
       const leads = activeStop === null || leg.from === activeStop || leg.to === activeStop;
-      const target = leads ? 1 : DIMMED_LEG_OPACITY;
-      line.material.opacity += (target - line.material.opacity) * k;
+      const emphasis = leads ? 1 : DIMMED_LEG_OPACITY;
+
+      const intro = forward.current[i];
+      if (intro) {
+        const drawn = reducedMotion
+          ? 1
+          : easeOutCubic(clamp01((elapsed - DRAW.delay - i * DRAW.stagger) / DRAW.perLeg));
+        intro.geometry.instanceCount = Math.round(drawn * ARC_SEGMENTS);
+        const target = emphasis * dim * (1 - flightWeight);
+        intro.material.opacity += (target - intro.material.opacity) * k;
+        intro.visible = intro.material.opacity > 0.01;
+      }
+
+      const timeline = backward.current[i];
+      if (timeline) {
+        const drawn = clamp01(readLegs - (legs.length - 1 - i));
+        timeline.geometry.instanceCount = Math.round(drawn * ARC_SEGMENTS);
+        const target = emphasis * dim * flightWeight;
+        timeline.material.opacity += (target - timeline.material.opacity) * k;
+        timeline.visible = timeline.material.opacity > 0.01;
+      }
     });
 
     stops.forEach((stop, i) => {
@@ -96,6 +142,7 @@ export function GlobeRoute({
       if (!marker) return;
       const target = stop.id === hoveredStop || stop.id === activeStop ? MARKER.emphasis : 1;
       marker.scale.setScalar(marker.scale.x + (target - marker.scale.x) * k);
+      (marker.material as MeshBasicMaterial).opacity = dim;
     });
 
     const pulse = ring.current;
@@ -103,31 +150,44 @@ export function GlobeRoute({
       const material = pulse.material as MeshBasicMaterial;
       if (reducedMotion) {
         pulse.scale.setScalar(PULSE_SCALE.still);
-        material.opacity = PULSE_OPACITY.still;
+        material.opacity = PULSE_OPACITY.still * dim;
       } else {
         const phase = (elapsed % PULSE_PERIOD) / PULSE_PERIOD;
         const eased = easeOutCubic(phase);
         pulse.scale.setScalar(PULSE_SCALE.from + (PULSE_SCALE.to - PULSE_SCALE.from) * eased);
-        material.opacity = PULSE_OPACITY.from * (1 - eased);
+        material.opacity = PULSE_OPACITY.from * (1 - eased) * dim;
       }
     }
   });
 
+  const lineProps = {
+    color: GLOBE_PALETTE.route,
+    lineWidth: LINE_WIDTH,
+    transparent: true,
+    depthWrite: false,
+    toneMapped: false,
+  } as const;
+
   return (
     <group>
       {legs.map((leg, i) => (
-        <Line
-          key={leg.key}
-          ref={(line) => {
-            lines.current[i] = line;
-          }}
-          points={leg.points}
-          color={GLOBE_PALETTE.route}
-          lineWidth={LINE_WIDTH}
-          transparent
-          depthWrite={false}
-          toneMapped={false}
-        />
+        <group key={leg.key}>
+          <Line
+            ref={(line) => {
+              forward.current[i] = line;
+            }}
+            points={leg.points}
+            {...lineProps}
+          />
+          <Line
+            ref={(line) => {
+              backward.current[i] = line;
+            }}
+            points={leg.reversed}
+            {...lineProps}
+            opacity={0}
+          />
+        </group>
       ))}
       {stops.map((stop, i) => (
         <mesh
@@ -138,7 +198,7 @@ export function GlobeRoute({
           position={toVector3(stop, MARKER.lift, new Vector3())}
         >
           <sphereGeometry args={[stop.current ? MARKER.current : MARKER.radius, 16, 16]} />
-          <meshBasicMaterial color={GLOBE_PALETTE.route} toneMapped={false} />
+          <meshBasicMaterial color={GLOBE_PALETTE.route} transparent toneMapped={false} />
         </mesh>
       ))}
       {ringPlacement ? (

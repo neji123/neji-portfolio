@@ -8,6 +8,7 @@ import { ContactSection } from "@/features/contact/contact-section";
 import { EducationSection } from "@/features/education/education-section";
 import { ExperienceSection } from "@/features/experience/experience-section";
 import { Hero } from "@/features/hero/hero";
+import { JourneyBackdrop } from "@/features/journey/journey-backdrop";
 import { LanguagesSection } from "@/features/languages/languages-section";
 import { ProjectsSection } from "@/features/projects/projects-section";
 import { SkillsSection } from "@/features/skills/skills-section";
@@ -18,9 +19,10 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
   if (!hasLocale(routing.locales, locale)) notFound();
   setRequestLocale(locale);
 
-  // Fields alternate night / chart paper like chapters; Languages continues the Certifications paper.
+  // One night for the whole page: the globe behind it moves from section to section.
   return (
     <main id="main">
+      <JourneyBackdrop locale={locale} />
       <Hero locale={locale} />
       <AboutSection locale={locale} />
       <ExperienceSection locale={locale} />

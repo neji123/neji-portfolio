@@ -16,7 +16,7 @@ export async function EducationSection({ locale }: EducationSectionProps) {
   const tExperience = await getTranslations({ locale, namespace: "Experience" });
 
   return (
-    <Section id="education" labelledBy="education-heading">
+    <Section id="education" labelledBy="education-heading" scene="education">
       <div className="flex flex-col gap-16 md:gap-24">
         <SectionHeading id="education-heading">{tSections("education")}</SectionHeading>
         <Reveal stagger>

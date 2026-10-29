@@ -1,12 +1,14 @@
 "use client";
 
 import { useFrame } from "@react-three/fiber";
-import { useMemo, useRef } from "react";
+import { type RefObject, useMemo, useRef } from "react";
 import { BackSide, Color, type ShaderMaterial } from "three";
 
 import { landDots } from "@/content/land-dots";
 
-import { toVector3 } from "./globe-math";
+import { type GlobeDriver } from "./globe-driver";
+import { dampFactor, toVector3 } from "./globe-math";
+import { createGlobeLook, PLACEMENT_DAMPING, stepLook } from "./globe-scenes";
 import {
   atmosphereFragment,
   bodyFragment,
@@ -51,10 +53,15 @@ function landPositions(dense: boolean): Float32Array {
 type GlobeSurfaceProps = {
   /** Fewer dots on phones and low-power devices. */
   sparse: boolean;
+  /** Read for the globe's brightness, which dims as it recedes behind the reading sections. */
+  driver: RefObject<GlobeDriver>;
+  reducedMotion: boolean;
 };
 
-export function GlobeSurface({ sparse }: GlobeSurfaceProps) {
+export function GlobeSurface({ sparse, driver, reducedMotion }: GlobeSurfaceProps) {
   const pointsMaterial = useRef<ShaderMaterial>(null);
+  const atmosphereMaterial = useRef<ShaderMaterial>(null);
+  const look = useRef(createGlobeLook());
   const positions = useMemo(() => landPositions(!sparse), [sparse]);
   const uniforms = useMemo(
     () => ({
@@ -66,16 +73,32 @@ export function GlobeSurface({ sparse }: GlobeSurfaceProps) {
         uColor: { value: new Color(GLOBE_PALETTE.atmosphere) },
         uStrength: { value: ATMOSPHERE_STRENGTH },
       },
-      points: { uColor: { value: new Color(GLOBE_PALETTE.dot) }, uSize: { value: 1 } },
+      points: {
+        uColor: { value: new Color(GLOBE_PALETTE.dot) },
+        uSize: { value: 1 },
+        uDim: { value: 1 },
+      },
     }),
     [],
   );
 
-  useFrame(({ size, viewport }) => {
+  useFrame(({ size, viewport }, delta) => {
+    const input = driver.current;
+    const { dim } = stepLook(
+      look.current,
+      input.scenes,
+      input.scene,
+      input.wide,
+      reducedMotion,
+      dampFactor(PLACEMENT_DAMPING, delta),
+    );
+    const atmosphere = atmosphereMaterial.current?.uniforms.uStrength;
+    if (atmosphere) atmosphere.value = ATMOSPHERE_STRENGTH * dim;
     const material = pointsMaterial.current;
-    if (!material?.uniforms.uSize) return;
+    if (!material?.uniforms.uSize || !material.uniforms.uDim) return;
     const boost = sparse ? SPARSE_DOT_BOOST : 1;
     material.uniforms.uSize.value = DOT_SCALE * size.height * viewport.dpr * boost;
+    material.uniforms.uDim.value = dim;
   });
 
   return (
@@ -104,6 +127,7 @@ export function GlobeSurface({ sparse }: GlobeSurfaceProps) {
       <mesh renderOrder={2}>
         <sphereGeometry args={[ATMOSPHERE_RADIUS, SPHERE_SEGMENTS, SPHERE_SEGMENTS]} />
         <shaderMaterial
+          ref={atmosphereMaterial}
           vertexShader={shellVertex}
           fragmentShader={atmosphereFragment}
           uniforms={uniforms.atmosphere}

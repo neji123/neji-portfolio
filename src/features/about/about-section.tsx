@@ -35,7 +35,7 @@ export async function AboutSection({ locale }: AboutSectionProps) {
   const person = profile[locale];
 
   return (
-    <Section id="about" labelledBy="about-heading" className="overflow-x-clip pb-0">
+    <Section id="about" labelledBy="about-heading" scene="about" className="overflow-x-clip pb-0">
       <div className="grid items-end gap-x-12 gap-y-12 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
         <Parallax speed={PORTRAIT_DRIFT} className="order-2 justify-self-center md:order-1">
           <Portrait
@@ -44,7 +44,7 @@ export async function AboutSection({ locale }: AboutSectionProps) {
             className="h-[clamp(24rem,62vw,40rem)]"
           />
         </Parallax>
-        <div className="order-1 flex flex-col gap-10 md:order-2 md:pb-28">
+        <div className="veil order-1 flex flex-col gap-10 md:order-2 md:pb-28">
           <SectionHeading id="about-heading">{tSections("about")}</SectionHeading>
           <Reveal stagger className="flex max-w-[62ch] flex-col gap-5">
             {person.about.map((paragraph) => (

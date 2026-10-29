@@ -1,48 +1,43 @@
 "use client";
 
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { type RefObject, useEffect, useMemo, useRef, useState } from "react";
+import { type RefObject, useEffect, useRef } from "react";
 
-import {
-  type GlobeMode,
-  type GlobeStop,
-  type GlobeView,
-  type JourneyLeg,
-  type JourneyStopId,
-} from "@/types/journey";
+import { type LatLon } from "@/types/geo";
+import { type GlobeStop, type JourneyLeg, type JourneyStopId } from "@/types/journey";
 
 import { GLOBE_FOV, GlobeCamera } from "./globe-camera";
 import { type GlobeDriver } from "./globe-driver";
-import { GlobeLabelProjector, GlobeLabels } from "./globe-labels";
+import { GlobeLabelProjector } from "./globe-label-projector";
+import { type LabelNodes } from "./globe-labels";
 import { GlobeRoute } from "./globe-route";
+import { GlobeStars } from "./globe-stars";
 import { GlobeSurface } from "./globe-surface";
 
-/** Phones are capped at 1.5× (brief §4); large screens stop at 1.75× to keep the fill rate sane. */
-const DPR: Record<"lowPower" | "full", [min: number, max: number]> = {
-  lowPower: [1, 1.5],
-  full: [1, 1.75],
-};
-const CAMERA = { fov: GLOBE_FOV, near: 0.1, far: 20, position: [0, 0, 5] } as const;
+/** Capped at 1.5× everywhere: the canvas covers the whole viewport for the whole page. */
+const DPR: [min: number, max: number] = [1, 1.5];
+const CAMERA = { fov: GLOBE_FOV, near: 0.1, far: 60, position: [0, 0, 5] } as const;
 
 export type JourneyGlobeProps = {
-  mode: GlobeMode;
   stops: readonly GlobeStop[];
   route: readonly JourneyLeg[];
-  view: GlobeView;
+  home: LatLon;
   driver: RefObject<GlobeDriver>;
-  /** False while the globe is off-screen: rendering stops entirely. */
+  labelNodes: LabelNodes;
+  /** False while the tab is hidden: rendering stops entirely. */
   active: boolean;
   activeStop: JourneyStopId | null;
+  hoveredStop: JourneyStopId | null;
+  /** The scene in view, rounded; reduced motion renders on demand, so a change must draw. */
+  sceneIndex: number;
   reducedMotion: boolean;
-  /** Phones and low-power devices: fewer dots, lower resolution, no antialiasing. */
+  /** Phones and low-power devices: fewer dots and stars, no antialiasing. */
   lowPower: boolean;
   parallax: boolean;
-  hint: string;
   onReady: () => void;
-  onSelect: (stop: JourneyStopId) => void;
 };
 
-/** Reports the first frame actually drawn, so the stage can swap the static globe out. */
+/** Reports the first frame actually drawn, so the backdrop can swap the static globe out. */
 function ReadySignal({ onReady }: { onReady: () => void }) {
   const fired = useRef(false);
   useFrame(() => {
@@ -62,67 +57,56 @@ function RenderOnChange({ signature }: { signature: string }) {
   return null;
 }
 
+/** The page's one WebGL canvas: the globe, its route and the stars, behind every section. */
 export function JourneyGlobe({
-  mode,
   stops,
   route,
-  view,
+  home,
   driver,
+  labelNodes,
   active,
   activeStop,
+  hoveredStop,
+  sceneIndex,
   reducedMotion,
   lowPower,
   parallax,
-  hint,
   onReady,
-  onSelect,
 }: JourneyGlobeProps) {
-  const [hoveredStop, setHoveredStop] = useState<JourneyStopId | null>(null);
   const frameloop = !active ? "never" : reducedMotion ? "demand" : "always";
-  const anchors = useRef<(HTMLDivElement | null)[]>([]);
-  const buttons = useRef<(HTMLButtonElement | null)[]>([]);
-  const labelNodes = useMemo(() => ({ anchors, buttons }), []);
 
-  // The labels are a sibling of the canvas, in the page's own React tree: the canvas only moves them.
   return (
-    <div className="relative size-full">
-      <Canvas
-        frameloop={frameloop}
-        dpr={lowPower ? DPR.lowPower : DPR.full}
-        camera={CAMERA}
-        gl={{ alpha: true, antialias: !lowPower, powerPreference: "high-performance" }}
-        flat
-        // The globe never takes the pointer from the page; only its city buttons do.
-        style={{ pointerEvents: "none" }}
-      >
-        <RenderOnChange signature={`${active}|${activeStop}|${hoveredStop}|${reducedMotion}`} />
-        <ReadySignal onReady={onReady} />
-        <GlobeCamera
-          mode={mode}
-          view={view}
-          stops={stops}
-          driver={driver}
-          reducedMotion={reducedMotion}
-          parallax={parallax}
-        />
-        <GlobeSurface sparse={lowPower} />
-        <GlobeRoute
-          stops={stops}
-          route={route}
-          activeStop={activeStop}
-          hoveredStop={hoveredStop}
-          reducedMotion={reducedMotion}
-        />
-        <GlobeLabelProjector stops={stops} nodes={labelNodes} />
-      </Canvas>
-      <GlobeLabels
-        stops={stops}
-        nodes={labelNodes}
-        activeStop={activeStop}
-        hint={hint}
-        onHover={setHoveredStop}
-        onSelect={onSelect}
+    <Canvas
+      frameloop={frameloop}
+      dpr={DPR}
+      camera={CAMERA}
+      gl={{ alpha: true, antialias: !lowPower, powerPreference: "high-performance" }}
+      flat
+      // The globe never takes the pointer from the page; only its city buttons do.
+      style={{ pointerEvents: "none" }}
+    >
+      <RenderOnChange
+        signature={`${active}|${activeStop}|${hoveredStop}|${sceneIndex}|${reducedMotion}`}
       />
-    </div>
+      <ReadySignal onReady={onReady} />
+      <GlobeCamera
+        stops={stops}
+        home={home}
+        driver={driver}
+        reducedMotion={reducedMotion}
+        parallax={parallax}
+      />
+      <GlobeStars sparse={lowPower} />
+      <GlobeSurface sparse={lowPower} driver={driver} reducedMotion={reducedMotion} />
+      <GlobeRoute
+        stops={stops}
+        route={route}
+        driver={driver}
+        activeStop={activeStop}
+        hoveredStop={hoveredStop}
+        reducedMotion={reducedMotion}
+      />
+      <GlobeLabelProjector stops={stops} nodes={labelNodes} driver={driver} />
+    </Canvas>
   );
 }

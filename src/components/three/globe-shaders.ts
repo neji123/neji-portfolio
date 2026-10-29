@@ -23,13 +23,14 @@ export const pointsVertex = /* glsl */ `
 
 export const pointsFragment = /* glsl */ `
   uniform vec3 uColor;
+  uniform float uDim;
   varying float vFacing;
 
   void main() {
     if (vFacing <= 0.0) discard;
     float d = length(gl_PointCoord - 0.5);
     if (d > 0.5) discard;
-    float alpha = smoothstep(0.5, 0.32, d) * (0.12 + 0.62 * vFacing);
+    float alpha = smoothstep(0.5, 0.32, d) * (0.12 + 0.62 * vFacing) * uDim;
     gl_FragColor = vec4(uColor, alpha);
     #include <colorspace_fragment>
   }
@@ -72,6 +73,31 @@ export const atmosphereFragment = /* glsl */ `
   void main() {
     float glow = pow(clamp(-dot(vNormal, vView) / 0.5, 0.0, 1.0), 2.4);
     gl_FragColor = vec4(uColor, glow * uStrength);
+    #include <colorspace_fragment>
+  }
+`;
+
+/** Background stars: fixed screen size, each with its own brightness. */
+export const starsVertex = /* glsl */ `
+  uniform float uSize;
+  attribute float aBrightness;
+  varying float vBrightness;
+
+  void main() {
+    vBrightness = aBrightness;
+    gl_PointSize = uSize * (0.6 + aBrightness);
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  }
+`;
+
+export const starsFragment = /* glsl */ `
+  uniform vec3 uColor;
+  varying float vBrightness;
+
+  void main() {
+    float d = length(gl_PointCoord - 0.5);
+    if (d > 0.5) discard;
+    gl_FragColor = vec4(uColor, smoothstep(0.5, 0.1, d) * vBrightness);
     #include <colorspace_fragment>
   }
 `;

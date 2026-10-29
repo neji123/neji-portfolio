@@ -17,8 +17,8 @@ export async function ContactSection({ locale }: ContactSectionProps) {
   const t = await getTranslations({ locale, namespace: "Contact" });
 
   return (
-    <Section id="contact" labelledBy="contact-heading" className="pb-0">
-      <div className="flex flex-col gap-12 md:gap-16">
+    <Section id="contact" labelledBy="contact-heading" scene="contact" className="pb-0">
+      <div className="veil flex flex-col gap-12 md:gap-16 lg:max-w-[58%]">
         <SectionHeading id="contact-heading" size="head" className="max-w-[28ch]">
           {t("closing")}
         </SectionHeading>

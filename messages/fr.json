@@ -61,9 +61,8 @@
     "cv": "Télécharger le CV"
   },
   "Globe": {
-    "label": "Globe montrant le parcours : Tunis, Montréal, la France, puis Koweït City",
+    "label": "Globe montrant le parcours : Tunis, Montréal, la France, puis Koweït",
     "loading": "Chargement du globe du parcours",
-    "journeyLabel": "Globe du parcours qui suit la chronologie : la caméra rejoint la ville de chaque poste",
     "showRole": "Voir ce poste dans Expérience"
   },
   "Footer": {

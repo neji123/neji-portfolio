@@ -24,7 +24,7 @@ export async function ProjectsSection({ locale }: ProjectsSectionProps) {
   const privateWork = projects.filter((project) => project.link.kind === "private");
 
   return (
-    <Section id="projects" labelledBy="projects-heading">
+    <Section id="projects" labelledBy="projects-heading" scene="projects">
       <div className="flex flex-col gap-20 md:gap-28">
         <SectionHeading id="projects-heading">{tSections("projects")}</SectionHeading>
 

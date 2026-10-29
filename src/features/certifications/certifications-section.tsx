@@ -20,7 +20,7 @@ export async function CertificationsSection({ locale }: CertificationsSectionPro
   const t = await getTranslations({ locale, namespace: "Certifications" });
 
   return (
-    <Section id="certifications" labelledBy="certifications-heading" field="paper">
+    <Section id="certifications" labelledBy="certifications-heading" scene="certifications">
       <div className="flex flex-col gap-16 md:gap-24">
         <SectionHeading id="certifications-heading">{tSections("certifications")}</SectionHeading>
         <Reveal stagger>

@@ -97,7 +97,8 @@ If you have a better and still unique 3D idea that fits a Full Stack Developer, 
 ## 4b. Chosen art direction: Night Route (Phase 1 decision)
 
 - **World:** the career is a night flight seen from altitude. The globe is the ground the first screen stands on, not a widget beside the copy.
-- **Palette:** night ground `#0C1A2C`, raised surface `#14263D`, chart-white ink `#EEF0EA`, muted `#A9B4C2`; route magenta `#F0609E` (on paper `#B4246B`) is used **only** for the route and the contact action. Reading sections switch to the daylight "chart paper" field (`#EEF0EA` ground, navy ink).
+- **One space, one canvas (Phase 4b rework):** the whole site is a single dark field with no section backgrounds and no hard horizontal edges. One persistent WebGL canvas is fixed behind the page; the same globe moves, scales, dims and turns from section to section (see Progress).
+- **Palette:** night ground `#0C1A2C`, raised surface `#14263D`, chart-white ink `#EEF0EA`, muted `#A9B4C2`; route magenta `#F0609E` is used **only** for the route and the contact action; deep night `#07111E` for the sky's edges. **Single dark theme:** the daylight "chart paper" field was removed. Text that crosses the globe sits on a soft blurred veil (`.veil`), never a box.
 - **Type:** Archivo (widened for display, normal width for text) for EN/FR; Alexandria for Arabic. Arabic is never letter-spaced and gets taller line heights.
 - **The experience must be original and immersive 3D, not a static page (top requirement):** the React Three Fiber globe is the backbone. Route arcs draw themselves on scroll, the camera travels Tunis → Montréal → France → Kuwait City, and each stop reveals its experience. Lenis smooth scroll everywhere, synced with GSAP ScrollTrigger. Purposeful motion in every section: split line/word text reveals, pinned scroll sequences, parallax depth, magnetic buttons, project-card 3D tilt or spotlight, animated counters, section/page transitions, an animated language switch.
 - **Component sources (inspiration, adapted to our tokens and TypeScript strict, never pasted blindly):** reactbits.dev, ui.aceternity.com, animata.design, hover.dev, 21st.dev.
@@ -329,11 +330,20 @@ Commit at the end of each phase with a Conventional Commit message.
 | 2. Foundations | ✅ Done | Tokens, fonts, next-intl EN/FR/AR + missing-key check, layout, header/footer, language switcher, Lenis + GSAP (RTL-aware) |
 | 3. Sections | ✅ Done | All sections built in 3 locales. Owner review: menu keeps the 6 links (no Education/Languages); project cards keep the 3D tilt, no spotlight |
 | 4. 3D Journey Globe | ✅ Done | See below |
+| 4b. 3D rework | ✅ Done | One persistent canvas, continuous dark page (see below) |
 | 5. Motion & polish | ⏭ Next | |
 | 6. Audit & tests | ⏳ | Playwright/axe/Lighthouse not run yet (owner rule: only lint + typecheck + build until asked) |
 | 7. Deploy | ⏳ | Repo: github.com/neji123/neji-portfolio (`main`) |
 
-**Phase 4 in short** (`src/components/three/`):
+**Phase 4b in short** (supersedes the two-instance Phase 4 layout):
+- One fixed canvas behind the page: `globe-backdrop.tsx` (rendered once by `features/journey/journey-backdrop.tsx`) holds the server-rendered SVG fallback at the hero placement, lazy-loads `journey-globe.tsx` (`next/dynamic`, `ssr: false`) after load + idle, and stops rendering while the tab is hidden. DPR `[1, 1.5]`; phones get fewer dots and stars.
+- Choreography table: `components/three/globe-scenes.ts`. Every section declares a scene (`data-globe-scene`); the globe blends between scenes as each section's top travels from the viewport bottom to 40%. Placement is a camera view offset (never a cropped box); `x` is measured from the inline-start edge, so Arabic mirrors.
+- Scenes: hero (large planet rising from the end edge) → about (behind the portrait, dim, slow turn) → experience (end-side companion; camera flies stop to stop, reversed arcs draw with the timeline) → projects/skills/education/certifications (small, dark, turning) → contact (foreground, Kuwait City pulsing towards the CTA).
+- City labels: one DOM layer above the content (z-30), offered in hero, experience (wide only) and contact; cards size to content and are kept inside the viewport.
+- Sections enter in CSS perspective (`Depth`); star field in the same canvas for depth. Reduced motion: one calm static placement, no travel, no scrubbing.
+- Regression note: between ea54759 and 7ddeea1 the layout classes did not change; the fix added a per-locale remount (`key={locale}`) and an `overflow-hidden` label layer (which truncated labels). Both containers are gone now; all locales share one choreography.
+
+**Phase 4 in short** (historical) (`src/components/three/`):
 - `globe-stage.tsx` holds the static SVG `globe-fallback.tsx` (server-rendered, LCP-safe) and lazy-loads `journey-globe.tsx` with `next/dynamic` (`ssr: false`) only after page load + idle, when near the viewport, with WebGL available and not on Save-Data / ≤2 cores / ≤2 GB devices. The 3D globe rises in and fades the SVG out after its first frame.
 - Two instances share the same chunk: **hero** (planet rising from the end edge; slow drift, mouse parallax on desktop, camera drifts along the route as the hero scrolls away) and **journey** (sticky night window beside the Experience timeline, a sticky band on phones; the camera flies to the stop of the role at the reading line, the route leg and the city label of that role light up, and the timeline marker grows).
 - Arcs draw themselves leg by leg (Tunis → Montréal → France → Kuwait City); Kuwait City pulses. Arc geometry is shared with the SVG via `src/lib/route-arc.ts`.

@@ -8,8 +8,6 @@ import { localize } from "./localize";
 
 /** The experience timeline whose roles drive the journey globe. */
 export const JOURNEY_ROUTE_ID = "experience-route";
-/** The sticky window holding the journey globe. */
-export const JOURNEY_PANEL_ID = "journey-panel";
 
 /** The id of a role's entry in the experience timeline, the target of a globe city. */
 export function roleAnchorId(experienceId: string): string {

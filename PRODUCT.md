@@ -34,7 +34,7 @@ A path no neighbouring developer shares: **Tunis → Montréal → France → Ku
 
 - Frontend-only static site: Next.js 16 App Router, TypeScript strict, Tailwind v4, deployed on Vercel. No backend; contact is `mailto:` plus links.
 - Trilingual with next-intl: `/en` (default), `/fr`, `/ar` (RTL). Every string is translated; company, product and technology names stay in their original form.
-- Signature feature: the 3D "Journey Globe" (React Three Fiber), showing career arcs Tunis → Montréal → France → Kuwait City. It is lazy-loaded, has a static fallback, and respects reduced motion.
+- Signature feature: the 3D "Journey Globe" (React Three Fiber), showing career arcs Tunis → Montréal → France → Kuwait City. It is **one persistent canvas fixed behind the whole page**: the same globe travels, scales and dims from section to section over a single continuous dark background (no light sections). It is lazy-loaded, has a static fallback, and respects reduced motion.
 - Node 20.20 runtime; no tooling that requires Node 22+.
 - Quality bar: Lighthouse ≥ 95 in every category, WCAG 2.2 AA, zero axe violations, CLS < 0.1, LCP < 2.5s.
 

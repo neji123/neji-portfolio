@@ -2,13 +2,13 @@
 @import "lenis/dist/lenis.css";
 
 /*
- * Night Route tokens. Components use role names only (ground, surface, ink…);
- * a field such as .field-paper re-scopes the roles, so everything inside restyles itself.
- * .field-night brings the night back inside a paper field (the journey globe's window).
+ * Night Route tokens: one dark field for the whole site. Components use role names only
+ * (ground, surface, ink…). The page is one continuous night seen from altitude: sections
+ * have no background of their own, so the fixed globe and the sky behind it show through.
  */
-:root,
-.field-night {
+:root {
   --ground: #0c1a2c;
+  --ground-deep: #07111e;
   --surface: #14263d;
   --surface-strong: #1c3352;
   --ink: #eef0ea;
@@ -20,6 +20,8 @@
   --globe: #102136;
   --glow: rgb(240 96 158 / 0.42);
   --glow-far: rgb(64 120 200 / 0.28);
+  /* Text over the globe sits on a soft, blurred pool of night, never a box. */
+  --veil: rgb(12 26 44 / 0.62);
 
   color-scheme: dark;
 }
@@ -28,6 +30,8 @@
   --gutter: clamp(1.5rem, 0.9rem + 2.4vw, 2.5rem);
   --section-gap: clamp(7.5rem, 5rem + 8vw, 15rem);
   --header-height: 4.5rem;
+  /* Sections enter in perspective (see Depth); the depth of that space. */
+  --scene-perspective: 1400px;
 
   /* Motion tokens (transitions.dev scale), mirrored for GSAP in src/lib/motion.ts. */
   --duration-quick: 150ms;
@@ -37,24 +41,9 @@
   --ease-expo-out: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* The daylight chart field: the reading sections. */
-.field-paper {
-  --ground: #eef0ea;
-  --surface: #e1e5e0;
-  --surface-strong: #d2d9d2;
-  --ink: #0c1a2c;
-  --muted: #3c4a5c;
-  --accent: #b4246b;
-  --accent-ink: #eef0ea;
-  --route: #b4246b;
-  --dot: #0c1a2c;
-  --globe: #e1e5e0;
-
-  color-scheme: light;
-}
-
 @theme inline {
   --color-ground: var(--ground);
+  --color-ground-deep: var(--ground-deep);
   --color-surface: var(--surface);
   --color-surface-strong: var(--surface-strong);
   --color-ink: var(--ink);
@@ -178,6 +167,90 @@
     --glow-near-layer: radial-gradient(closest-side, var(--glow), transparent 72%); /* taste-skill-ignore: owner-requested portrait glow */
     --glow-far-layer: radial-gradient(closest-side, var(--glow-far), transparent 100%); /* taste-skill-ignore: owner-requested portrait glow */
     background: var(--glow-near-layer), var(--glow-far-layer);
+  }
+
+  /*
+   * The fixed sky behind the page: a deeper night at the edges, so nothing ends on a hard line.
+   * The static globe frame paints exactly where the 3D globe's hero scene starts.
+   */
+  .globe-sky {
+    container-type: size;
+    background: radial-gradient(120% 90% at 50% 110%, var(--ground) 30%, var(--ground-deep) 100%);
+  }
+
+  .globe-frame {
+    --gx: var(--gx-n);
+    --gy: var(--gy-n);
+    --globe-r: calc(var(--gr-n) * 100cqw);
+
+    position: absolute;
+    top: calc(var(--gy) * 100cqh);
+    left: calc(var(--gx) * 100cqw);
+    /* The SVG's disc fills 500 / 620 of its box (GLOBE_DISC_FRACTION). */
+    width: calc(var(--globe-r) * 2 * 620 / 500);
+    aspect-ratio: 1;
+    translate: -50% -50%;
+
+    &:dir(rtl) {
+      left: calc((1 - var(--gx)) * 100cqw);
+    }
+
+    & > svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    @media (min-width: 48rem) {
+      --gx: var(--gx-w);
+      --gy: var(--gy-w);
+      --globe-r: calc(var(--gr-w) * min(62cqw, 100cqh));
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      --gx: var(--gx-rn);
+      --gy: var(--gy-rn);
+      --globe-r: calc(var(--gr-rn) * 100cqw);
+      opacity: 0.45;
+
+      @media (min-width: 48rem) {
+        --gx: var(--gx-rw);
+        --gy: var(--gy-rw);
+        --globe-r: calc(var(--gr-rw) * min(62cqw, 100cqh));
+      }
+    }
+  }
+
+  /* Without WebGL the static globe still steps back behind the reading sections. */
+  [data-globe-depth="back"] .globe-frame {
+    opacity: 0.2;
+  }
+
+  /* Soft corners: the sky darkens towards the viewport edges, over the globe. */
+  .globe-vignette {
+    background: radial-gradient(130% 100% at 50% 45%, transparent 55%, rgb(7 17 30 / 0.55) 100%);
+  }
+
+  /* A blurred pool of night behind a text block that crosses the globe: readable, unboxed. */
+  .veil {
+    position: relative;
+    isolation: isolate;
+
+    &::before {
+      content: "";
+      position: absolute;
+      inset: -1.25rem -1.5rem;
+      z-index: -1;
+      border-radius: 2rem;
+      background: var(--veil);
+      filter: blur(28px);
+      pointer-events: none;
+    }
+  }
+
+  /* The perspective space a section's content tilts in from (Depth). */
+  .scene-space {
+    perspective: var(--scene-perspective);
+    perspective-origin: 50% 0%;
   }
 
   /* The current stop breathes; reduced motion holds it still. */

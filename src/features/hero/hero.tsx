@@ -2,21 +2,12 @@ import { getTranslations } from "next-intl/server";
 
 import { Magnetic } from "@/components/motion/magnetic";
 import { WordReveal } from "@/components/motion/word-reveal";
-import { GLOBE_DISC_FRACTION, GlobeFallback } from "@/components/three/globe-fallback";
-import { GlobeStage } from "@/components/three/globe-stage";
+import { GLOBE_SCENE_ATTRIBUTE } from "@/components/three/globe-scenes";
 import { ButtonLink } from "@/components/ui/button";
 import { ArrowIcon, DownloadIcon } from "@/components/ui/icons";
 import { contact } from "@/content/contact";
-import { journeyCityLabels, journeyRoute, journeyStops } from "@/content/journey";
-import { landDots } from "@/content/land-dots";
 import { profile } from "@/content/profile";
 import { type Locale } from "@/i18n/locales";
-import { globeStops } from "@/lib/journey-stops";
-import { type GlobeView } from "@/types/journey";
-
-// Camera over the western Mediterranean: Montréal near the limb, Kuwait City well inside the disc.
-const GLOBE_VIEW: GlobeView = { center: { lat: 35, lon: 8 }, disc: GLOBE_DISC_FRACTION };
-const GLOBE_LABEL_SIZE = 30;
 
 type HeroProps = {
   locale: Locale;
@@ -24,17 +15,16 @@ type HeroProps = {
 
 export async function Hero({ locale }: HeroProps) {
   const t = await getTranslations({ locale, namespace: "Hero" });
-  const tGlobe = await getTranslations({ locale, namespace: "Globe" });
-  const tExperience = await getTranslations({ locale, namespace: "Experience" });
   const person = profile[locale];
 
   return (
     <section
       id="top"
       aria-labelledby="hero-title"
-      className="relative isolate flex min-h-[calc(100svh-var(--header-height))] flex-col overflow-hidden"
+      {...{ [GLOBE_SCENE_ATTRIBUTE]: "hero" }}
+      className="relative z-10 flex min-h-[calc(100svh-var(--header-height))] flex-col"
     >
-      <div className="relative z-10 flex max-w-[60rem] flex-col gap-6 px-gutter pt-10 md:pt-16">
+      <div className="flex max-w-[60rem] flex-col gap-6 px-gutter pt-10 md:pt-16">
         <WordReveal
           as="h1"
           id="hero-title"
@@ -65,32 +55,8 @@ export async function Hero({ locale }: HeroProps) {
         </div>
       </div>
 
-      {/* Phone: the horizon rises under the copy. Desktop: the planet rises from the end edge. */}
-      <div className="pointer-events-none relative mt-auto h-[clamp(15rem,64vw,22rem)] md:absolute md:inset-0 md:h-auto">
-        {/* The static globe paints with the page; the 3D one takes over once the page is idle. */}
-        <GlobeStage
-          key={locale}
-          mode="hero"
-          stops={globeStops(locale, tExperience("present"))}
-          route={journeyRoute}
-          view={GLOBE_VIEW}
-          label={tGlobe("label")}
-          hint={tGlobe("showRole")}
-          trackId="top"
-          className="absolute start-1/2 top-0 aspect-square w-[150vw] max-w-none -translate-x-1/2 -translate-y-[9.68%] md:start-[70%] md:top-[22%] md:w-[min(88vw,84rem)] rtl:translate-x-1/2 md:[&_text]:text-[17px]"
-        >
-          <GlobeFallback
-            dots={landDots}
-            stops={journeyStops}
-            route={journeyRoute}
-            cityLabels={journeyCityLabels[locale]}
-            center={GLOBE_VIEW.center}
-            label={tGlobe("label")}
-            labelSize={GLOBE_LABEL_SIZE}
-            className="size-full"
-          />
-        </GlobeStage>
-      </div>
+      {/* Phone: room under the copy for the page's globe, which rises here as a horizon. */}
+      <div aria-hidden="true" className="mt-auto h-[clamp(15rem,64vw,22rem)] md:hidden" />
     </section>
   );
 }

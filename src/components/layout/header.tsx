@@ -21,7 +21,7 @@ export async function Header({ locale }: HeaderProps) {
   const items: NavItem[] = sectionIds.map((id) => ({ href: `#${id}`, label: tNav(id) }));
 
   return (
-    <header className="sticky top-0 z-40 bg-ground">
+    <header className="sticky top-0 z-40 bg-ground/80 backdrop-blur-md">
       <div className="flex h-header items-center justify-between gap-6 px-gutter">
         <a
           href="#top"

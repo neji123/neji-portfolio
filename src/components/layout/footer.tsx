@@ -23,7 +23,7 @@ export async function Footer({ locale }: FooterProps) {
   ];
 
   return (
-    <footer className="bg-ground px-gutter pt-section pb-10 text-ink">
+    <footer className="relative z-10 px-gutter pt-section pb-10 text-ink">
       <p className="type-display text-balance">{name}</p>
       <div className="mt-16 flex flex-wrap items-end justify-between gap-x-12 gap-y-6">
         <ul className="flex flex-wrap gap-x-8 gap-y-2">

@@ -17,6 +17,6 @@ export const journeyRoute: readonly JourneyLeg[] = [
 
 export const journeyCityLabels: Localized<Record<JourneyStopId, string>> = {
   en: { tunis: "Tunis", montreal: "Montréal", france: "France", "kuwait-city": "Kuwait City" },
-  fr: { tunis: "Tunis", montreal: "Montréal", france: "France", "kuwait-city": "Koweït City" },
+  fr: { tunis: "Tunis", montreal: "Montréal", france: "France", "kuwait-city": "Koweït" },
   ar: { tunis: "تونس", montreal: "مونتريال", france: "فرنسا", "kuwait-city": "مدينة الكويت" },
 };

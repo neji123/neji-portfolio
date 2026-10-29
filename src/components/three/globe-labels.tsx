@@ -1,67 +1,25 @@
 "use client";
 
-import { useFrame } from "@react-three/fiber";
-import { type RefObject, useEffect, useMemo, useRef, useState } from "react";
-import { Vector3 } from "three";
+import { type RefObject, useEffect, useRef, useState } from "react";
 
 import { type GlobeStop, type JourneyStopId } from "@/types/journey";
 
-import { toVector3 } from "./globe-math";
-
-const LABEL_LIFT = 1.01;
-/** A city this close to the limb hides its label, before the arc of the globe swallows it. */
-const MIN_FACING = 0.15;
 const CITY_ATTRIBUTE = "data-globe-city";
 
 /** The DOM nodes the projector moves each frame, one per stop, in stop order. */
 export type LabelNodes = {
   anchors: RefObject<(HTMLDivElement | null)[]>;
   buttons: RefObject<(HTMLButtonElement | null)[]>;
+  cards: RefObject<(HTMLDivElement | null)[]>;
+  /** Each card's size, kept by a ResizeObserver so the projector never measures in the frame loop. */
+  sizes: RefObject<{ width: number; height: number }[]>;
 };
-
-type GlobeLabelProjectorProps = {
-  stops: readonly GlobeStop[];
-  nodes: LabelNodes;
-};
-
-/**
- * Inside the Canvas: projects each city to the screen and writes the position straight onto
- * its label (no React state per frame). Cities on the far side hide and leave the tab order.
- */
-export function GlobeLabelProjector({ stops, nodes }: GlobeLabelProjectorProps) {
-  const positions = useMemo(
-    () => stops.map((stop) => toVector3(stop, LABEL_LIFT, new Vector3())),
-    [stops],
-  );
-  const scratch = useMemo(() => ({ view: new Vector3(), screen: new Vector3() }), []);
-  const facing = useRef<boolean[]>([]);
-
-  useFrame(({ camera, size }) => {
-    const { view, screen } = scratch;
-    view.copy(camera.position).normalize();
-    positions.forEach((position, i) => {
-      const anchor = nodes.anchors.current[i];
-      if (!anchor) return;
-      screen.copy(position).project(camera);
-      const x = ((screen.x + 1) / 2) * size.width;
-      const y = ((1 - screen.y) / 2) * size.height;
-      anchor.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0)`;
-
-      const front = position.dot(view) / LABEL_LIFT > MIN_FACING;
-      if (facing.current[i] === front) return;
-      facing.current[i] = front;
-      anchor.dataset.facing = front ? "front" : "back";
-      const button = nodes.buttons.current[i];
-      if (button) button.tabIndex = front ? 0 : -1;
-    });
-  });
-
-  return null;
-}
 
 type GlobeLabelsProps = {
   stops: readonly GlobeStop[];
   nodes: LabelNodes;
+  /** False in the scenes where the globe is only atmosphere: the labels fade out. */
+  shown: boolean;
   /** The stop of the role being read keeps its label open. */
   activeStop: JourneyStopId | null;
   /** Spoken after each city's roles, e.g. "Show in Experience". */
@@ -76,13 +34,14 @@ function accessibleName(stop: GlobeStop, hint: string): string {
 }
 
 /**
- * The city labels: one ordinary DOM layer over the canvas. Each city is a real button:
- * hover or focus opens its label (company and years), a click goes to the role. On touch,
- * the first tap opens, the second goes.
+ * The city labels: one ordinary DOM layer over the page, moved by the globe's projector.
+ * Each city is a real button: hover or focus opens its label (company and years), a click
+ * goes to the role. On touch, the first tap opens, the second goes.
  */
 export function GlobeLabels({
   stops,
   nodes,
+  shown,
   activeStop,
   hint,
   onHover,
@@ -92,6 +51,7 @@ export function GlobeLabels({
   const [focused, setFocused] = useState<JourneyStopId | null>(null);
   const [tapped, setTapped] = useState<JourneyStopId | null>(null);
   const pointerType = useRef("");
+  const { anchors, buttons, cards, sizes } = nodes;
 
   // A tap anywhere else closes the tapped label.
   useEffect(() => {
@@ -104,13 +64,35 @@ export function GlobeLabels({
     return () => window.removeEventListener("pointerdown", close);
   }, [tapped]);
 
+  useEffect(() => {
+    const measured = sizes.current;
+    const observer = new ResizeObserver((entries) => {
+      entries.forEach((entry) => {
+        const index = cards.current.indexOf(entry.target as HTMLDivElement);
+        if (index < 0) return;
+        const box = entry.borderBoxSize[0];
+        measured[index] = {
+          width: box?.inlineSize ?? entry.contentRect.width,
+          height: box?.blockSize ?? entry.contentRect.height,
+        };
+      });
+    });
+    cards.current.forEach((card) => {
+      if (card) observer.observe(card);
+    });
+    return () => observer.disconnect();
+  }, [cards, sizes, stops]);
+
   const hover = (stop: JourneyStopId | null) => {
     setHovered(stop);
     onHover(stop);
   };
 
   return (
-    <div className="pointer-events-none absolute inset-0 overflow-hidden">
+    <div
+      data-shown={shown}
+      className="pointer-events-none absolute inset-0 transition-opacity duration-500 data-[shown=false]:opacity-0 motion-reduce:transition-none"
+    >
       {stops.map((stop, i) => {
         const open = [hovered, focused, tapped, activeStop].includes(stop.id);
         return (
@@ -119,7 +101,7 @@ export function GlobeLabels({
           <div
             key={stop.id}
             ref={(element) => {
-              nodes.anchors.current[i] = element;
+              anchors.current[i] = element;
             }}
             {...{ [CITY_ATTRIBUTE]: "" }}
             data-facing="back"
@@ -128,11 +110,11 @@ export function GlobeLabels({
           >
             <button
               ref={(element) => {
-                nodes.buttons.current[i] = element;
+                buttons.current[i] = element;
               }}
               type="button"
               tabIndex={-1}
-              className="pointer-events-auto absolute top-0 left-0 size-11 -translate-x-1/2 -translate-y-1/2 cursor-pointer rounded-full"
+              className="absolute top-0 left-0 size-11 -translate-x-1/2 -translate-y-1/2 cursor-pointer rounded-full group-data-[facing=front]/city:pointer-events-auto in-data-[shown=false]:pointer-events-none!"
               onPointerDown={(event) => {
                 pointerType.current = event.pointerType;
               }}
@@ -157,10 +139,17 @@ export function GlobeLabels({
             >
               <span className="sr-only">{accessibleName(stop, hint)}</span>
             </button>
-            {/* The text itself follows the document direction, so Arabic reads right to left. */}
+            {/*
+              The card sizes to its content; the projector slides it sideways to keep it inside
+              the viewport and flips it under the point near the top. The text follows the
+              document direction, so Arabic reads right to left.
+            */}
             <div
+              ref={(element) => {
+                cards.current[i] = element;
+              }}
               aria-hidden="true"
-              className="pointer-events-none absolute bottom-4 left-0 -translate-x-1/2 bg-ground/85 px-2.5 py-1 text-center type-small whitespace-nowrap text-ink"
+              className="pointer-events-none absolute bottom-4 left-0 w-max max-w-[calc(100vw-1.5rem)] bg-ground/85 px-2.5 py-1 text-center type-small text-ink"
             >
               <p className="font-semibold">{stop.city}</p>
               <div className="grid grid-rows-[0fr] opacity-0 transition-[grid-template-rows,opacity] duration-300 group-data-[open=true]/city:grid-rows-[1fr] group-data-[open=true]/city:opacity-100 motion-reduce:transition-none">

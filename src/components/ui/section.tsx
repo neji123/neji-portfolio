@@ -1,29 +1,35 @@
 import { type ReactNode } from "react";
 
+import { Depth } from "@/components/motion/depth";
+import { GLOBE_SCENE_ATTRIBUTE, type GlobeSceneId } from "@/components/three/globe-scenes";
 import { cn } from "@/lib/cn";
 
 type SectionProps = {
   id: string;
   /** Id of the heading that names this section. */
   labelledBy: string;
-  /** "paper" switches to the daylight chart field; every role token inside follows. */
-  field?: "night" | "paper";
+  /** Where the page's one globe goes while this section is read. */
+  scene: GlobeSceneId;
   className?: string;
   children: ReactNode;
 };
 
-export function Section({ id, labelledBy, field = "night", className, children }: SectionProps) {
+/**
+ * No background of its own: every section sits in the same night, over the fixed globe,
+ * and its content enters in perspective.
+ */
+export function Section({ id, labelledBy, scene, className, children }: SectionProps) {
   return (
     <section
       id={id}
       aria-labelledby={labelledBy}
+      {...{ [GLOBE_SCENE_ATTRIBUTE]: scene }}
       className={cn(
-        "scroll-mt-header bg-ground px-gutter py-section text-ink",
-        field === "paper" && "field-paper",
+        "scene-space relative z-10 scroll-mt-header px-gutter py-section text-ink",
         className,
       )}
     >
-      {children}
+      <Depth>{children}</Depth>
     </section>
   );
 }

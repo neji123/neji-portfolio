@@ -19,7 +19,7 @@ export async function SkillsSection({ locale }: SkillsSectionProps) {
   const t = await getTranslations({ locale, namespace: "Skills" });
 
   return (
-    <Section id="skills" labelledBy="skills-heading" field="paper">
+    <Section id="skills" labelledBy="skills-heading" scene="skills">
       <div className="flex flex-col gap-16 md:gap-24">
         <div className="flex flex-col gap-6">
           <SectionHeading id="skills-heading">{tSections("skills")}</SectionHeading>

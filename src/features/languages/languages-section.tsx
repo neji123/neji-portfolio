@@ -15,7 +15,12 @@ export async function LanguagesSection({ locale }: LanguagesSectionProps) {
   const tSections = await getTranslations({ locale, namespace: "Sections" });
 
   return (
-    <Section id="languages" labelledBy="languages-heading" field="paper" className="pt-0 md:pt-0">
+    <Section
+      id="languages"
+      labelledBy="languages-heading"
+      scene="certifications"
+      className="pt-0 md:pt-0"
+    >
       <div className="grid items-baseline gap-x-12 gap-y-8 md:grid-cols-[minmax(0,4fr)_minmax(0,8fr)]">
         <SectionHeading id="languages-heading" size="head">
           {tSections("languages")}
