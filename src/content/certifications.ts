@@ -13,7 +13,7 @@ export const certifications: readonly Certification[] = [
     issued: "2026-06",
     proof: {
       kind: "image",
-      image: { src: "/images/certificates/certificate-ai-optimus.png", width: 4734, height: 3364 },
+      image: { src: "/images/certificates/certificate-ai-optimus.webp", width: 2400, height: 1705 },
       alt: {
         en: "Professional training certificate in artificial intelligence issued by Optimus Training to Mohamed Neji Benzarti",
         fr: "Certificat de formation professionnelle en intelligence artificielle délivré par Optimus Training à Mohamed Neji Benzarti",

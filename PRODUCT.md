@@ -52,7 +52,7 @@ A path no neighbouring developer shares: **Tunis → Montréal → France → Ku
 
 - Portrait photos: `public/images/profile-transparent.png`, `profile.jpg`, `profile-square.*`.
 - CV: `public/cv/CV_Mohamed_Neji_Benzarti.pdf` (owner-provided, never edited).
-- Certificates (publication authorized): `public/images/certificates/certificate-ai-optimus.png`, `tcf-b2.png`, still to be added by the owner. CCNA via Credly.
+- Certificates (publication authorized): `public/images/certificates/certificate-ai-optimus.webp`, `tcf-b2.png`, still to be added by the owner. CCNA via Credly.
 - Live sites for project screenshots: mustawfi.com, takween.com.kw, plagediscount.com.
 - Key figures: 4 countries · 5+ production projects · Engineer, ESPRIT.
 - **Absent, never to be fabricated:** testimonials, client logos beyond the named employers, metrics, user counts, revenue or performance numbers, awards.

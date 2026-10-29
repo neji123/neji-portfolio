@@ -261,7 +261,7 @@ Key figures (animated counters): **4 countries** · **5+ production projects** �
 - **Professional Training in Artificial Intelligence**, Optimus Training (state-approved, ANETI) · Jan 2026 to Jun 2026
 
 ### Certifications
-- **Professional Training Certificate in Artificial Intelligence**, Optimus Training · Jun 2026 · image: `images/certificates/certificate-ai-optimus.png`
+- **Professional Training Certificate in Artificial Intelligence**, Optimus Training · Jun 2026 · image: `images/certificates/certificate-ai-optimus.webp`
 - **TCF Tout Public, Level B2 (CEFR)**, France Éducation International · Jan 2026 · image: `images/certificates/tcf-b2.png`
 - **Cisco CCNA: Switching, Routing, and Wireless Essentials**: https://www.credly.com/badges/312e7aad-e46d-46f1-8cb4-97831eddbc35
 
@@ -283,7 +283,7 @@ Every piece of text is translated into **English, French and Arabic**: navigatio
 ### Privacy rules (mandatory)
 Never publish: national ID (CIN) number, date of birth, home address.
 
-**Authorized exception:** the owner explicitly authorizes publishing the two certificate images listed under *Certifications* (`certificate-ai-optimus.png`, `tcf-b2.png`); the owner has already hidden the ID number on them. Do not publish any other certificate scan.
+**Authorized exception:** the owner explicitly authorizes publishing the two certificate images listed under *Certifications* (`certificate-ai-optimus.webp`, `tcf-b2.png`); the owner has already hidden the ID number on them. Do not publish any other certificate scan.
 
 The CV PDF in `public/cv/` is provided by the owner and is never edited by the agent. The WhatsApp number in it is intentional.
 
@@ -295,7 +295,7 @@ The CV PDF in `public/cv/` is provided by the owner and is never edited by the a
 |---|---|
 | `images/profile-transparent.png` | **Main portrait** (transparent background), integrated into the hero/about design with a subtle glow or gradient behind it. This overrides taste-skill's no-glow rule at the owner's explicit request |
 | `images/profile.jpg`, `images/profile-square.*` | Fallbacks / OG image source |
-| `images/certificates/certificate-ai-optimus.png` | Certifications card + lightbox (AI training, Optimus Training) |
+| `images/certificates/certificate-ai-optimus.webp` | Certifications card + lightbox (AI training, Optimus Training) |
 | `images/certificates/tcf-b2.png` | Certifications card + lightbox (TCF B2) |
 | `cv/CV_Mohamed_Neji_Benzarti.pdf` | Download CV button (owner-provided, never edited by the agent; one CV for all locales unless the owner adds localized versions) |
 | `images/projects/mustawfi.png`, `takween.png`, `plagediscount.png` | Project cards (if missing: capture them with Playwright at 1440×900) |
