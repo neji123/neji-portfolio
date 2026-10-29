@@ -1,24 +1,18 @@
-import {
-  angularDistance,
-  greatCircle,
-  type OrthographicView,
-  projectOrthographic,
-} from "@/lib/geo";
+import { type OrthographicView, projectOrthographic } from "@/lib/geo";
+import { routeArc } from "@/lib/route-arc";
 import { type LandDot, type LatLon } from "@/types/geo";
 import { type JourneyLeg, type JourneyStop, type JourneyStopId } from "@/types/journey";
 
 const RADIUS = 500;
 const VIEW_PADDING = 120;
-const ARC_SEGMENTS = 72;
-const ARC_BASE_LIFT = 0.06;
-const ARC_LIFT_PER_RADIAN = 0.12;
 const DOT_MIN_RADIUS = 1.4;
 const DOT_DEPTH_RADIUS = 1.8;
 const DOT_MIN_OPACITY = 0.12;
 const DOT_DEPTH_OPACITY = 0.62;
 const LABEL_OFFSET = 18;
-// Consecutive legs that share a corridor (Tunis → Montréal → France) fly at different heights.
-const ALTERNATE_LEG_LIFT = 1.9;
+
+/** Share of the drawing the globe's disc fills; the 3D globe frames itself to the same size. */
+export const GLOBE_DISC_FRACTION = RADIUS / (RADIUS + VIEW_PADDING);
 
 type GlobeFallbackProps = {
   dots: readonly LandDot[];
@@ -31,13 +25,10 @@ type GlobeFallbackProps = {
   className?: string;
 };
 
-function arcPath(from: LatLon, to: LatLon, view: OrthographicView, liftScale: number): string {
-  const lift = liftScale * (ARC_BASE_LIFT + ARC_LIFT_PER_RADIAN * angularDistance(from, to));
-  const points = greatCircle(from, to, ARC_SEGMENTS);
+function arcPath(from: LatLon, to: LatLon, view: OrthographicView, legIndex: number): string {
   let path = "";
   let drawing = false;
-  points.forEach((point, i) => {
-    const altitude = lift * Math.sin((Math.PI * i) / ARC_SEGMENTS);
+  routeArc(from, to, legIndex).forEach(({ point, altitude }) => {
     const projected = projectOrthographic(point, view, altitude);
     if (!projected.visible) {
       drawing = false;
@@ -49,6 +40,7 @@ function arcPath(from: LatLon, to: LatLon, view: OrthographicView, liftScale: nu
   return path;
 }
 
+/** The static globe: server-rendered, shown first and kept whenever WebGL is unavailable. */
 export function GlobeFallback({
   dots,
   stops,
@@ -91,8 +83,7 @@ export function GlobeFallback({
           const from = stopsById.get(fromId);
           const to = stopsById.get(toId);
           if (!from || !to) return null;
-          const liftScale = index % 2 === 0 ? ALTERNATE_LEG_LIFT : 1;
-          return <path key={`${fromId}-${toId}`} d={arcPath(from, to, view, liftScale)} />;
+          return <path key={`${fromId}-${toId}`} d={arcPath(from, to, view, index)} />;
         })}
       </g>
       {stops.map((stop) => {

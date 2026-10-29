@@ -62,7 +62,9 @@
   },
   "Globe": {
     "label": "Globe showing the career route: Tunis, Montréal, France, then Kuwait City",
-    "loading": "Loading the journey globe"
+    "loading": "Loading the journey globe",
+    "journeyLabel": "Journey globe following the timeline: the camera flies to the city of each role",
+    "showRole": "Show this role in Experience"
   },
   "Footer": {
     "copyright": "© {year} {name}",

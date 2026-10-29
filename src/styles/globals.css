@@ -4,8 +4,10 @@
 /*
  * Night Route tokens. Components use role names only (ground, surface, ink…);
  * a field such as .field-paper re-scopes the roles, so everything inside restyles itself.
+ * .field-night brings the night back inside a paper field (the journey globe's window).
  */
-:root {
+:root,
+.field-night {
   --ground: #0c1a2c;
   --surface: #14263d;
   --surface-strong: #1c3352;
@@ -19,6 +21,10 @@
   --glow: rgb(240 96 158 / 0.42);
   --glow-far: rgb(64 120 200 / 0.28);
 
+  color-scheme: dark;
+}
+
+:root {
   --gutter: clamp(1.5rem, 0.9rem + 2.4vw, 2.5rem);
   --section-gap: clamp(7.5rem, 5rem + 8vw, 15rem);
   --header-height: 4.5rem;
@@ -29,8 +35,6 @@
   --duration-medium: 450ms;
   --ease-smooth-out: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-expo-out: cubic-bezier(0.16, 1, 0.3, 1);
-
-  color-scheme: dark;
 }
 
 /* The daylight chart field: the reading sections. */

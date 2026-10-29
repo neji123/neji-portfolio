@@ -317,3 +317,27 @@ The CV PDF in `public/cv/` is provided by the owner and is never edited by the a
 | **7. Deploy** | Vercel deployment, OG image check, final README | Live URL |
 
 Commit at the end of each phase with a Conventional Commit message.
+
+---
+
+## 10. Progress (resume here)
+
+| Phase | Status | Notes |
+|---|---|---|
+| 0. Setup | ✅ Done | Skills installed (pinned `skills@1.5.26`, Node 20), tooling, folder structure |
+| 1. Design direction | ✅ Done | **Night Route** chosen (section 4b) |
+| 2. Foundations | ✅ Done | Tokens, fonts, next-intl EN/FR/AR + missing-key check, layout, header/footer, language switcher, Lenis + GSAP (RTL-aware) |
+| 3. Sections | ✅ Done | All sections built in 3 locales. Owner review: menu keeps the 6 links (no Education/Languages); project cards keep the 3D tilt, no spotlight |
+| 4. 3D Journey Globe | ✅ Done | See below |
+| 5. Motion & polish | ⏭ Next | |
+| 6. Audit & tests | ⏳ | Playwright/axe/Lighthouse not run yet (owner rule: only lint + typecheck + build until asked) |
+| 7. Deploy | ⏳ | Repo: github.com/neji123/neji-portfolio (`main`) |
+
+**Phase 4 in short** (`src/components/three/`):
+- `globe-stage.tsx` holds the static SVG `globe-fallback.tsx` (server-rendered, LCP-safe) and lazy-loads `journey-globe.tsx` with `next/dynamic` (`ssr: false`) only after page load + idle, when near the viewport, with WebGL available and not on Save-Data / ≤2 cores / ≤2 GB devices. The 3D globe rises in and fades the SVG out after its first frame.
+- Two instances share the same chunk: **hero** (planet rising from the end edge; slow drift, mouse parallax on desktop, camera drifts along the route as the hero scrolls away) and **journey** (sticky night window beside the Experience timeline, a sticky band on phones; the camera flies to the stop of the role at the reading line, the route leg and the city label of that role light up, and the timeline marker grows).
+- Arcs draw themselves leg by leg (Tunis → Montréal → France → Kuwait City); Kuwait City pulses. Arc geometry is shared with the SVG via `src/lib/route-arc.ts`.
+- City labels are real DOM buttons (drei `Html`): hover/focus/tap shows city + company + years in the current locale (built server-side in `src/lib/journey-stops.ts`); click (second tap on touch) scrolls to the role in Experience and focuses it.
+- Performance: mobile/coarse pointer → DPR `[1, 1.5]`, ~2.3k dots instead of ~9k, no antialiasing; desktop DPR `[1, 1.75]`; `frameloop="never"` off-screen. The 3D chunk is ~262 KB gzip and is not in the initial bundle.
+- Reduced motion: no drift, parallax, pulse or camera travel; the journey globe stays on the whole-route overview and renders on demand.
+- The timeline reads most recent first, so the journey camera flies the route backwards (Kuwait City → France → Tunis → Montréal).
