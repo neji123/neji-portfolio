@@ -4,10 +4,10 @@ import { Magnetic } from "@/components/motion/magnetic";
 import { Reveal } from "@/components/motion/reveal";
 import { GLOBE_AVOID_ATTRIBUTE } from "@/components/three/globe-scenes";
 import { ButtonLink } from "@/components/ui/button";
-import { DownloadIcon, ExternalIcon, WhatsAppIcon } from "@/components/ui/icons";
+import { DownloadIcon, ExternalIcon } from "@/components/ui/icons";
 import { Section } from "@/components/ui/section";
 import { SectionHeading } from "@/components/ui/section-heading";
-import { contact, whatsappHref } from "@/content/contact";
+import { contact } from "@/content/contact";
 import { profile } from "@/content/profile";
 import { site } from "@/content/site";
 import { type Locale } from "@/i18n/locales";
@@ -16,6 +16,7 @@ import { ContactForm } from "./contact-form";
 import { QrDownload } from "./qr-download";
 import { ShareSite } from "./share-site";
 import { SiteQrCode } from "./site-qr-code";
+import { WhatsAppChat } from "./whatsapp-chat";
 
 const QR_SVG_ID = "contact-qr";
 
@@ -59,20 +60,7 @@ export async function ContactSection({ locale }: ContactSectionProps) {
                 </a>
               </Magnetic>
             </div>
-            <a
-              href={whatsappHref(t("whatsapp.message"))}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="-mt-6 inline-flex min-h-11 items-center gap-3 type-body"
-            >
-              <span className="grid size-8 place-items-center rounded-full bg-whatsapp text-white">
-                <WhatsAppIcon className="size-4.5" />
-              </span>
-              <span className="link-line">{t("whatsapp.name")}</span>
-              <span dir="ltr" className="text-muted tabular-nums">
-                {contact.whatsapp.display}
-              </span>
-            </a>
+            <WhatsAppChat label={t("whatsapp.label")} message={t("whatsapp.message")} />
             <div {...avoid} className="flex w-fit flex-wrap gap-3">
               <ButtonLink
                 href={contact.linkedin}

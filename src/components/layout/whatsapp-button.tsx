@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import { WhatsAppIcon } from "@/components/ui/icons";
+import { openWhatsApp } from "@/lib/whatsapp";
 
 /** Marks the controls the floating WhatsApp button must never cover (the form's send button). */
 export const FAB_AVOID_ATTRIBUTE = "data-fab-avoid";
@@ -10,7 +11,8 @@ export const FAB_AVOID_ATTRIBUTE = "data-fab-avoid";
 const AVOID_MARGIN = 12;
 
 type WhatsAppButtonProps = {
-  href: string;
+  /** The visitor's first line, in their language. The chat link itself exists only on click. */
+  message: string;
   /** "Chat on WhatsApp": the accessible name and the tooltip. */
   label: string;
 };
@@ -28,7 +30,7 @@ function overlaps(a: DOMRect, b: DOMRect, margin: number): boolean {
  * Floating chat button, bottom right in every language. It steps away while it would cover a
  * control marked `data-fab-avoid`, and (CSS) while a modal dialog is open.
  */
-export function WhatsAppButton({ href, label }: WhatsAppButtonProps) {
+export function WhatsAppButton({ message, label }: WhatsAppButtonProps) {
   // The fixed anchor never moves, so its box is where the button sits even while hidden.
   const anchorRef = useRef<HTMLDivElement>(null);
   const [covering, setCovering] = useState(false);
@@ -65,15 +67,14 @@ export function WhatsAppButton({ href, label }: WhatsAppButtonProps) {
       <span aria-hidden="true" className="whatsapp-tooltip">
         {label}
       </span>
-      <a
-        href={href}
-        target="_blank"
-        rel="noopener noreferrer"
+      <button
+        type="button"
+        onClick={() => openWhatsApp(message)}
         aria-label={label}
         className="whatsapp-button"
       >
         <WhatsAppIcon className="size-7" />
-      </a>
+      </button>
     </div>
   );
 }

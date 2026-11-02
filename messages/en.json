@@ -115,7 +115,6 @@
       "captchaNotice": "This form is protected by hCaptcha; its <privacy>Privacy Policy</privacy> and <terms>Terms of Service</terms> apply."
     },
     "whatsapp": {
-      "name": "WhatsApp",
       "label": "Chat on WhatsApp",
       "message": "Hello Mohamed, I found your portfolio and I'd like to talk about…"
     },

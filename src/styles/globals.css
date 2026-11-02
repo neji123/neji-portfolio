@@ -489,12 +489,12 @@
     }
   }
 
-  :is(a:hover, a:focus-visible) .link-line::after {
+  :is(a, button):is(:hover, :focus-visible) .link-line::after {
     scale: 1 1;
     transform-origin: left;
   }
 
-  :is(a:hover, a:focus-visible) .link-line:dir(rtl)::after {
+  :is(a, button):is(:hover, :focus-visible) .link-line:dir(rtl)::after {
     transform-origin: right;
   }
 

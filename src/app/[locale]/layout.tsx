@@ -9,7 +9,6 @@ import { SkipLink } from "@/components/layout/skip-link";
 import { WhatsAppButton } from "@/components/layout/whatsapp-button";
 import { IntroGate, MotionGate } from "@/components/motion/motion-gate";
 import { SmoothScroll } from "@/components/motion/smooth-scroll";
-import { whatsappHref } from "@/content/contact";
 import { profile } from "@/content/profile";
 import { site, siteDescription } from "@/content/site";
 import { directionFor, type Locale, localeMeta, locales } from "@/i18n/locales";
@@ -91,7 +90,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
               <Footer locale={typedLocale} />
             </div>
             <WhatsAppButton
-              href={whatsappHref(tContact("whatsapp.message"))}
+              message={tContact("whatsapp.message")}
               label={tContact("whatsapp.label")}
             />
           </SmoothScroll>
