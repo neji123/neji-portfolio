@@ -36,7 +36,7 @@ Build a **frontend-only**, fast, accessible and memorable personal portfolio tha
 | Testing | Playwright (E2E + visual screenshots + accessibility with `@axe-core/playwright`) |
 | Deploy | Vercel (static where possible) |
 
-No backend, no database. Contact = `mailto:` + links (optionally a form service like Formspree later).
+No backend, no database. Contact = `mailto:` + links + a contact form delivered by Web3Forms (client-side POST, nothing stored).
 
 ---
 
@@ -332,8 +332,16 @@ Commit at the end of each phase with a Conventional Commit message.
 | 4. 3D Journey Globe | ✅ Done | See below |
 | 4b. 3D rework | ✅ Done | One persistent canvas, continuous dark page (see below) |
 | 5. Motion & polish | ✅ Done | Fixes + motion & polish (see below) |
+| 5b. Contact & WhatsApp | ✅ Done | Contact form, WhatsApp button, QR code (see below) |
 | 6. Audit & tests | ⏭ Next | |
 | 7. Deploy | ⏳ | Repo: github.com/neji123/neji-portfolio (`main`) |
+
+**Phase 5b in short** (before Phase 6):
+- Contact is two columns from `lg` (stacked below): the closing line (sized by its column, `type-head-fit`, 3 lines at 1024 and 1440 in all locales), the email on one line at every width (container units, `clamp()`, left to right in Arabic, still magnetic), WhatsApp with `+216 50 506 050`, LinkedIn / GitHub / CV, then the QR code (desktop) or a Share button (phones); the letter-card form at the end.
+- Form (`features/contact/contact-form.tsx`): name, email, optional company, subject chips (native radio group), message (20 characters min, counter, placeholder per subject); `zod/mini` schema with message keys, inline errors via `aria-describedby` + `aria-live`, focus on the first invalid field. Sent to Web3Forms as JSON (`lib/web3forms.ts`: `from_name`, `replyto`, `locale`, honeypot `botcheck`); subject `[Portfolio] <subject>: <name>`; a pre-filled `mailto:` fallback when the key is missing or the request fails.
+- WhatsApp (`components/layout/whatsapp-button.tsx`): bottom right in every locale, safe-area aware (`viewportFit: "cover"`), arrives after the intro, hidden under any open dialog and whenever it would cover an element marked `data-fab-avoid` (the form's send row, the footer's back-to-top row).
+- QR code (`features/contact/site-qr-code.tsx`): built on the server from `NEXT_PUBLIC_SITE_URL` + locale with `qrcode` (not in the client bundle), inline SVG, night modules on a light rounded tile, quiet zone kept; SVG / PNG download without a library.
+- Env: `.env.local` lives at the project root (it had been placed in `public/`, where it would be served); `.env.example` and `README.md` document `NEXT_PUBLIC_WEB3FORMS_KEY` and `NEXT_PUBLIC_SITE_URL`. Deploying only needs `NEXT_PUBLIC_SITE_URL`.
 
 **Phase 5 in short**:
 - Fixes: globe labels are text with a soft shadow (no box); the words sit under the page text (z-5) while the invisible city buttons stay above it (z-30), and both flip or hide away from anything marked `data-globe-avoid` (hero name, title, actions; contact actions). Sideways scroll came from the section entrance tilt magnifying long sections; they now lean back, plus `overflow-x: clip` on the page wrapper. Scrollspy (`components/layout/active-section.ts`): one accent line slides under the menu item of the section being read, `aria-current="location"`, mirrored in the mobile menu.

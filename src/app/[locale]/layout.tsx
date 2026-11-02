@@ -6,8 +6,10 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
 import { SkipLink } from "@/components/layout/skip-link";
+import { WhatsAppButton } from "@/components/layout/whatsapp-button";
 import { IntroGate, MotionGate } from "@/components/motion/motion-gate";
 import { SmoothScroll } from "@/components/motion/smooth-scroll";
+import { whatsappHref } from "@/content/contact";
 import { profile } from "@/content/profile";
 import { site, siteDescription } from "@/content/site";
 import { directionFor, type Locale, localeMeta, locales } from "@/i18n/locales";
@@ -24,6 +26,8 @@ export function generateStaticParams() {
 export const viewport: Viewport = {
   themeColor: "#0c1a2c",
   colorScheme: "dark",
+  // Lets env(safe-area-inset-*) report the iPhone home indicator, so the WhatsApp button clears it.
+  viewportFit: "cover",
 };
 
 const languageAlternates = {
@@ -64,6 +68,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
   setRequestLocale(locale);
   const typedLocale: Locale = locale;
   const t = await getTranslations({ locale: typedLocale, namespace: "SkipLink" });
+  const tContact = await getTranslations({ locale: typedLocale, namespace: "Contact" });
 
   return (
     <html
@@ -85,6 +90,10 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
               {children}
               <Footer locale={typedLocale} />
             </div>
+            <WhatsAppButton
+              href={whatsappHref(tContact("whatsapp.message"))}
+              label={tContact("whatsapp.label")}
+            />
           </SmoothScroll>
         </NextIntlClientProvider>
         <script

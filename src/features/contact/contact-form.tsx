@@ -3,6 +3,7 @@
 import { useLocale, useTranslations } from "next-intl";
 import { type ChangeEvent, type FormEvent, type ReactNode, useId, useRef, useState } from "react";
 
+import { FAB_AVOID_ATTRIBUTE } from "@/components/layout/whatsapp-button";
 import { GLOBE_AVOID_ATTRIBUTE } from "@/components/three/globe-scenes";
 import { Button } from "@/components/ui/button";
 import { CheckIcon, SendIcon, SpinnerIcon } from "@/components/ui/icons";
@@ -26,9 +27,6 @@ import {
 type Status = "idle" | "sending" | SendOutcome;
 
 const EMPTY: ContactDraft = { name: "", email: "", company: "", subject: "", message: "" };
-
-/** Marks the controls the floating WhatsApp button must never cover. */
-export const FAB_AVOID_ATTRIBUTE = "data-fab-avoid";
 
 type ContactFormProps = {
   /** The owner's name, on the letter's "To" line. */

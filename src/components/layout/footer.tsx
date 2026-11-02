@@ -40,7 +40,8 @@ export async function Footer({ locale }: FooterProps) {
             </li>
           ))}
         </ul>
-        <div className="flex items-center gap-8 type-small text-muted">
+        {/* The floating WhatsApp button steps away rather than cover "back to top". */}
+        <div data-fab-avoid className="flex items-center gap-8 type-small text-muted">
           <p>{t("copyright", { year, name })}</p>
           <a
             href="#top"

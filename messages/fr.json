@@ -110,6 +110,20 @@
         "messageShort": "Veuillez écrire au moins {min} caractères.",
         "tooLong": "C'est trop long, veuillez raccourcir."
       }
+    },
+    "whatsapp": {
+      "name": "WhatsApp",
+      "label": "Discuter sur WhatsApp",
+      "message": "Bonjour Mohamed, j'ai découvert votre portfolio et j'aimerais échanger avec vous au sujet de…"
+    },
+    "qr": {
+      "caption": "Scannez pour ouvrir mon portfolio sur votre téléphone",
+      "label": "Code QR qui ouvre {url}",
+      "downloadSvg": "Télécharger le code QR en SVG",
+      "downloadPng": "Télécharger le code QR en PNG",
+      "share": "Partager mon portfolio",
+      "copied": "Lien copié",
+      "copyFailed": "Le lien n'a pas pu être copié"
     }
   },
   "Globe": {

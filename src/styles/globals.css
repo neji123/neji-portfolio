@@ -24,6 +24,8 @@
   --veil: rgb(12 26 44 / 0.62);
   /* Form errors only: a warm coral, apart from the route magenta, AA on the night. */
   --danger: #ff9e8f;
+  /* WhatsApp's own green, for its button and badge only. */
+  --whatsapp: #25d366;
 
   color-scheme: dark;
 }
@@ -71,6 +73,7 @@
   --color-accent-ink: var(--accent-ink);
   --color-route: var(--route);
   --color-danger: var(--danger);
+  --color-whatsapp: var(--whatsapp);
 
   --font-sans: var(--font-archivo), var(--font-alexandria), ui-sans-serif, system-ui, sans-serif;
   --font-arabic: var(--font-alexandria), var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
@@ -125,6 +128,11 @@
     line-height: 1.35;
     letter-spacing: 0;
   }
+}
+
+/* A head set in a narrow column (it needs an @container): type-head, capped by the column's width. */
+@utility type-head-fit {
+  font-size: min(clamp(2rem, 1.3rem + 3.2vw, 4rem), max(2rem, 8.5cqi));
 }
 
 @utility type-display {
@@ -747,6 +755,119 @@
     .spinner {
       animation: none;
     }
+  }
+}
+
+@layer components {
+  /*
+   * The floating WhatsApp button. Bottom right in every language (a fixed corner people know,
+   * so physical "right", not "end"), clear of the iPhone home indicator. It arrives once the
+   * intro has played, and steps away under an open dialog or over the form's send button.
+   */
+  .whatsapp-fab {
+    position: fixed;
+    right: calc(var(--gutter) * 0.6 + env(safe-area-inset-right));
+    bottom: calc(var(--gutter) * 0.6 + env(safe-area-inset-bottom));
+    z-index: 40;
+    transition-property: opacity, visibility;
+    transition-duration: var(--duration-fast);
+    transition-timing-function: var(--ease-smooth-out);
+
+    &[data-covering] {
+      opacity: 0;
+      visibility: hidden;
+    }
+  }
+
+  :root:has(dialog[open]) .whatsapp-fab {
+    opacity: 0;
+    visibility: hidden;
+    transition-duration: 0s;
+  }
+
+  .whatsapp-button {
+    display: grid;
+    place-items: center;
+    width: 3.5rem;
+    aspect-ratio: 1;
+    border-radius: 999px;
+    background: var(--whatsapp);
+    color: #fff;
+    box-shadow: 0 12px 28px -10px rgb(3 8 15 / 0.85);
+    transition-property: translate, scale;
+    transition-duration: var(--duration-medium);
+    transition-timing-function: var(--ease-smooth-out);
+    animation: fab-in var(--duration-slow) var(--ease-expo-out)
+      calc(var(--duration-reveal) + var(--duration-medium)) both;
+
+    &:active {
+      scale: 0.96;
+      transition-duration: var(--duration-quick);
+    }
+  }
+
+  [data-intro="seen"] .whatsapp-button {
+    animation-delay: var(--duration-fast);
+  }
+
+  /* The tooltip sits on the button's left, toward the page. */
+  .whatsapp-tooltip {
+    position: absolute;
+    top: 50%;
+    right: calc(100% + 0.75rem);
+    padding: 0.4rem 0.8rem;
+    border-radius: 999px;
+    background: var(--surface-strong);
+    color: var(--ink);
+    font-size: clamp(0.8125rem, 0.79rem + 0.1vw, 0.875rem);
+    font-weight: 500;
+    white-space: nowrap;
+    opacity: 0;
+    translate: var(--distance-shift) -50%;
+    pointer-events: none;
+    transition-property: opacity, translate;
+    transition-duration: var(--duration-fast);
+    transition-timing-function: var(--ease-smooth-out);
+  }
+
+  .whatsapp-fab:has(.whatsapp-button:focus-visible) .whatsapp-tooltip {
+    opacity: 1;
+    translate: 0 -50%;
+  }
+
+  @media (hover: hover) {
+    .whatsapp-fab:has(.whatsapp-button:hover) .whatsapp-tooltip {
+      opacity: 1;
+      translate: 0 -50%;
+    }
+
+    .whatsapp-button:hover {
+      translate: 0 calc(var(--distance-lift) * -1);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .whatsapp-button {
+      animation: none;
+    }
+
+    .whatsapp-button:hover,
+    .whatsapp-button:active {
+      translate: 0 0;
+      scale: 1;
+    }
+
+    .whatsapp-tooltip {
+      translate: 0 -50%;
+    }
+  }
+}
+
+@keyframes fab-in {
+  from {
+    opacity: 0;
+    translate: 0 var(--distance-shift);
+    scale: 0.9;
   }
 }
 

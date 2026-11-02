@@ -4,7 +4,8 @@ export type SectionId =
   "about" | "experience" | "projects" | "skills" | "certifications" | "contact";
 
 export const site = {
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
+  // An empty value counts as unset; a trailing slash is dropped so paths join cleanly.
+  url: (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").replace(/\/+$/, ""),
 } as const;
 
 /** Page sections in reading order; the nav and the page both follow it. */
