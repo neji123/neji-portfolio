@@ -2,7 +2,12 @@
 
 import { type RefObject, useEffect, useRef, useState } from "react";
 
-import { HCAPTCHA_SITEKEY, type HCaptchaApi, loadHCaptcha } from "@/lib/hcaptcha";
+import {
+  HCAPTCHA_SITEKEY,
+  type HCaptchaApi,
+  isCaptchaRequired,
+  loadHCaptcha,
+} from "@/lib/hcaptcha";
 
 /** Start loading while the form is still this far below the viewport. */
 const NEAR_MARGIN = "800px 0px";
@@ -12,8 +17,11 @@ type Widget = { api: HCaptchaApi; id: string };
 type HCaptcha = {
   /** Where the invisible widget lives (an empty element inside the form). */
   containerRef: RefObject<HTMLDivElement | null>;
-  /** Runs the check; resolves with the token, rejects if it fails or is closed. */
-  getToken: () => Promise<string>;
+  /**
+   * Runs the check; resolves with the token, rejects if it fails or is closed. Resolves `null`
+   * only on the local dev server, where hCaptcha is not loaded at all.
+   */
+  getToken: () => Promise<string | null>;
   reset: () => void;
 };
 
@@ -29,6 +37,12 @@ export function useHCaptcha(locale: string, enabled: boolean): HCaptcha {
   useEffect(() => {
     const container = containerRef.current;
     if (!enabled || !container) return;
+    if (!isCaptchaRequired()) {
+      console.warn(
+        "[contact] Local development: hCaptcha is not loaded; the form sends without a token.",
+      );
+      return;
+    }
     const observer = new IntersectionObserver(
       (entries) => {
         if (!entries.some((entry) => entry.isIntersecting)) return;
@@ -67,7 +81,8 @@ export function useHCaptcha(locale: string, enabled: boolean): HCaptcha {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [near, locale]);
 
-  async function getToken(): Promise<string> {
+  async function getToken(): Promise<string | null> {
+    if (!isCaptchaRequired()) return null;
     const widget = await ensureWidget();
     const { response } = await widget.api.execute(widget.id, { async: true });
     return response;

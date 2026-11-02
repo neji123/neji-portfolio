@@ -29,6 +29,18 @@ declare global {
   }
 }
 
+const LOCAL_HOSTS = new Set(["localhost", "127.0.0.1", "[::1]"]);
+
+/**
+ * hCaptcha issues no valid token on localhost, so the dev server (`next dev`) on a local host
+ * sends without one. A production build always requires it, wherever it runs: NODE_ENV is
+ * inlined at build time, so this whole check folds to `true` there.
+ */
+export function isCaptchaRequired(): boolean {
+  if (process.env.NODE_ENV !== "development") return true;
+  return !LOCAL_HOSTS.has(window.location.hostname);
+}
+
 let loading: Promise<HCaptchaApi> | null = null;
 
 /** Adds hCaptcha's script once, on demand; a failed load can be retried. */

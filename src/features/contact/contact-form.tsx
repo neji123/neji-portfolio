@@ -141,7 +141,7 @@ export function ContactForm({ recipient }: ContactFormProps) {
       return;
     }
     setStatus("sending");
-    let token: string;
+    let token: string | null;
     try {
       token = await getCaptchaToken();
     } catch (error) {
@@ -152,7 +152,6 @@ export function ContactForm({ recipient }: ContactFormProps) {
       ...result.data,
       subject: subjectLine,
       locale,
-      botcheck: false,
       hCaptchaToken: token,
     });
     // A token is good for one submission.

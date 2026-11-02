@@ -15,10 +15,8 @@ export type Web3FormsMessage = {
   subject: string;
   message: string;
   locale: string;
-  /** The honeypot's state: Web3Forms rejects a submission where it is set. */
-  botcheck: boolean;
-  /** The invisible hCaptcha's token, verified by Web3Forms. */
-  hCaptchaToken: string;
+  /** The invisible hCaptcha's token, verified by Web3Forms; null on the local dev server. */
+  hCaptchaToken: string | null;
 };
 
 /** "unavailable": no access key in this build. "failed": the request did not go through. */
@@ -32,20 +30,21 @@ export async function sendWithWeb3Forms({
 }: Web3FormsMessage): Promise<SendOutcome> {
   if (!ACCESS_KEY) return "unavailable";
   try {
+    // FormData, as in the Web3Forms docs: the browser sets the multipart header itself.
+    const body = new FormData();
+    body.append("access_key", ACCESS_KEY);
+    body.append("from_name", "Portfolio");
+    body.append("replyto", message.email);
+    for (const [field, value] of Object.entries(message)) body.append(field, value);
+    // An unchecked honeypot sends nothing, like an unchecked checkbox (a filled one never gets here).
+    if (hCaptchaToken) body.append(HCAPTCHA_FIELD, hCaptchaToken);
     const response = await fetch(WEB3FORMS_ENDPOINT, {
       method: "POST",
-      headers: { "Content-Type": "application/json", Accept: "application/json" },
-      body: JSON.stringify({
-        access_key: ACCESS_KEY,
-        from_name: "Portfolio",
-        replyto: message.email,
-        ...message,
-        [HCAPTCHA_FIELD]: hCaptchaToken,
-      }),
+      body,
       signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
     });
-    const body = (await response.json()) as Web3FormsResponse;
-    return response.ok && body.success === true ? "sent" : "failed";
+    const result = (await response.json()) as Web3FormsResponse;
+    return response.ok && result.success === true ? "sent" : "failed";
   } catch {
     return "failed";
   }
