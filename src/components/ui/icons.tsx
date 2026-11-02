@@ -73,3 +73,29 @@ export function DownloadIcon({ className }: IconProps) {
     </IconFrame>
   );
 }
+
+/** A letter leaving toward the reading end: mirrored in right-to-left. */
+export function SendIcon({ className }: IconProps) {
+  return (
+    <IconFrame nudge="out" className={cn("rtl:-scale-x-100", className)}>
+      <path d="M20 4L9.5 14.5M20 4l-6.5 16-4-5.5L4 10.5 20 4z" />
+    </IconFrame>
+  );
+}
+
+export function CheckIcon({ className }: IconProps) {
+  return (
+    <IconFrame className={className}>
+      <path d="M5 12.5l4.5 4.5L19 7.5" />
+    </IconFrame>
+  );
+}
+
+/** Turns while something is on its way (see .spinner); holds still under reduced motion. */
+export function SpinnerIcon({ className }: IconProps) {
+  return (
+    <IconFrame className={cn("spinner", className)}>
+      <path d="M12 4a8 8 0 1 1-8 8" />
+    </IconFrame>
+  );
+}

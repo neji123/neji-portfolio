@@ -22,6 +22,8 @@
   --glow-far: rgb(64 120 200 / 0.28);
   /* Text over the globe sits on a soft, blurred pool of night, never a box. */
   --veil: rgb(12 26 44 / 0.62);
+  /* Form errors only: a warm coral, apart from the route magenta, AA on the night. */
+  --danger: #ff9e8f;
 
   color-scheme: dark;
 }
@@ -68,6 +70,7 @@
   --color-accent: var(--accent);
   --color-accent-ink: var(--accent-ink);
   --color-route: var(--route);
+  --color-danger: var(--danger);
 
   --font-sans: var(--font-archivo), var(--font-alexandria), ui-sans-serif, system-ui, sans-serif;
   --font-arabic: var(--font-alexandria), var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
@@ -574,6 +577,189 @@
       transition-duration: 0s;
       scale: 1;
     }
+  }
+}
+
+@layer components {
+  /*
+   * The contact form is a letter sent by night airmail: a sheet of dark glass over the globe,
+   * an airmail edge in the route colour, ruled lines to write on and a stamp in the corner.
+   */
+  .letter-card {
+    position: relative;
+    padding: clamp(1.5rem, 1rem + 2vw, 2.75rem);
+    background: rgb(20 38 61 / 0.66);
+    border: 1px solid oklch(1 0 0 / 0.08);
+    box-shadow:
+      0 1px 0 0 rgb(255 255 255 / 0.05) inset,
+      0 32px 64px -32px rgb(3 8 15 / 0.9);
+    backdrop-filter: blur(18px) saturate(1.1);
+
+    &::before {
+      content: "";
+      position: absolute;
+      inset-inline: -1px;
+      top: -1px;
+      height: 4px;
+      background: repeating-linear-gradient(
+        -45deg,
+        var(--accent) 0 12px,
+        transparent 12px 20px,
+        var(--muted) 20px 32px,
+        transparent 32px 40px
+      );
+      opacity: 0.85;
+      pointer-events: none;
+    }
+  }
+
+  /* A stamp: perforated edge, the route's last stop inside. */
+  .letter-stamp {
+    flex-shrink: 0;
+    width: 2.75rem;
+    aspect-ratio: 4 / 5;
+    border: 2px dotted var(--surface-strong);
+    background:
+      radial-gradient(circle at 50% 50%, var(--accent) 0 3px, transparent 4px),
+      radial-gradient(circle at 50% 50%, transparent 9px, var(--route) 9px 10px, transparent 11px),
+      var(--ground);
+    opacity: 0.9;
+  }
+
+  /* Fields are lines on the letter, not boxes; focus draws the line in the accent. */
+  .letter-input {
+    width: 100%;
+    min-height: 2.75rem;
+    padding-block: 0.5rem;
+    background: transparent;
+    border-block-end: 1px solid var(--surface-strong);
+    color: var(--ink);
+    font-size: max(1rem, 1em);
+    transition: border-color var(--duration-fast) var(--ease-smooth-out);
+
+    &::placeholder {
+      color: var(--muted);
+      opacity: 0.7;
+    }
+
+    &:hover {
+      border-color: var(--muted);
+    }
+
+    &:focus-visible {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 1px 0 0 var(--accent);
+    }
+
+    &[aria-invalid="true"] {
+      border-color: var(--danger);
+    }
+  }
+
+  /* Ruled lines that scroll with the text. */
+  .letter-lines {
+    --rule: 2rem;
+    min-height: calc(var(--rule) * 5 + 0.5rem);
+    padding-block: 0.25rem;
+    line-height: var(--rule);
+    border-block-end: 0;
+    background: repeating-linear-gradient(
+        to bottom,
+        transparent 0 calc(var(--rule) - 1px),
+        var(--surface-strong) calc(var(--rule) - 1px) var(--rule)
+      )
+      0 0.25rem / 100% var(--rule) local;
+
+    &:focus-visible {
+      box-shadow: none;
+      background-image: repeating-linear-gradient(
+        to bottom,
+        transparent 0 calc(var(--rule) - 1px),
+        rgb(240 96 158 / 0.55) calc(var(--rule) - 1px) var(--rule)
+      );
+    }
+
+    &[aria-invalid="true"] {
+      background-image: repeating-linear-gradient(
+        to bottom,
+        transparent 0 calc(var(--rule) - 1px),
+        rgb(255 158 143 / 0.6) calc(var(--rule) - 1px) var(--rule)
+      );
+    }
+  }
+
+  /* Subject chips: the chosen one takes the language pill's ink. */
+  .subject-chip {
+    display: inline-flex;
+    min-height: 2.75rem;
+    align-items: center;
+    padding-inline: 1rem;
+    border: 1px solid var(--surface-strong);
+    border-radius: 999px;
+    font-size: clamp(0.8125rem, 0.79rem + 0.1vw, 0.875rem);
+    font-weight: 500;
+    cursor: pointer;
+    user-select: none;
+    transition-property: background-color, border-color, color, scale;
+    transition-duration: var(--duration-quick);
+    transition-timing-function: var(--ease-smooth-out);
+
+    &:hover {
+      background: var(--surface);
+    }
+
+    &:active {
+      scale: 0.96;
+    }
+
+    &:has(:checked) {
+      background: var(--ink);
+      border-color: var(--ink);
+      color: var(--ground);
+    }
+
+    &:has(:focus-visible) {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+    }
+  }
+
+  [role="radiogroup"][aria-invalid="true"] .subject-chip:not(:has(:checked)) {
+    border-color: rgb(255 158 143 / 0.6);
+  }
+
+  /* A state that changes (the send button, the status line) arrives rather than snaps. */
+  .state-swap {
+    animation: state-swap var(--duration-fast) var(--ease-smooth-out) both;
+  }
+
+  .spinner {
+    animation: spin var(--duration-slow) linear infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .subject-chip:active {
+      scale: 1;
+    }
+
+    .state-swap,
+    .spinner {
+      animation: none;
+    }
+  }
+}
+
+@keyframes state-swap {
+  from {
+    opacity: 0;
+    translate: 0 calc(var(--distance-nudge) * 2);
+  }
+}
+
+@keyframes spin {
+  to {
+    rotate: 1turn;
   }
 }
 

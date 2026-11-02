@@ -58,7 +58,59 @@
     "email": "Email",
     "linkedin": "LinkedIn",
     "github": "GitHub",
-    "cv": "Download CV"
+    "cv": "Download CV",
+    "form": {
+      "title": "Write to me",
+      "to": "To",
+      "subjectLine": "Subject",
+      "subjectLineEmpty": "Choose a subject below",
+      "name": "Full name",
+      "namePlaceholder": "Your full name",
+      "email": "Email",
+      "emailPlaceholder": "you@company.com",
+      "company": "Company / organisation",
+      "optional": "Optional",
+      "companyPlaceholder": "Where you work",
+      "subject": "Subject",
+      "subjects": {
+        "freelance": "Freelance project",
+        "fullTime": "Full-time job offer",
+        "opportunity": "Job opportunity",
+        "collaboration": "Collaboration",
+        "consultation": "Technical consultation",
+        "other": "Other"
+      },
+      "message": "Message",
+      "placeholders": {
+        "default": "Write your message…",
+        "freelance": "Describe your project, timeline and budget…",
+        "fullTime": "Tell me about the role, the team and where it is based…",
+        "opportunity": "Tell me about the opportunity and what you have in mind…",
+        "collaboration": "What would you like to build together?",
+        "consultation": "Describe the technical question or the system you are working on…",
+        "other": "Write your message…"
+      },
+      "counter": "{count} / {max}",
+      "counterMin": "{remaining, plural, one {# more character needed} other {# more characters needed}}",
+      "submit": "Send message",
+      "sending": "Sending…",
+      "sent": "Message sent",
+      "success": "Thank you, your message is on its way. I will get back to you soon.",
+      "failed": "Your message could not be sent. Please try again, or write to me by email.",
+      "unavailable": "The form is unavailable right now. You can write to me by email instead.",
+      "fallback": "Open your email app with this message",
+      "privacy": "Your message is sent directly to my inbox. No data is stored on this site.",
+      "honeypot": "Leave this box unchecked",
+      "errors": {
+        "nameRequired": "Please enter your full name.",
+        "emailRequired": "Please enter your email address.",
+        "emailInvalid": "This email address does not look valid.",
+        "subjectRequired": "Please choose a subject.",
+        "messageRequired": "Please write a message.",
+        "messageShort": "Please write at least {min} characters.",
+        "tooLong": "This is too long, please shorten it."
+      }
+    }
   },
   "Globe": {
     "label": "Globe showing the career route: Tunis, Montréal, France, then Kuwait City",

@@ -58,7 +58,59 @@
     "email": "E-mail",
     "linkedin": "LinkedIn",
     "github": "GitHub",
-    "cv": "Télécharger le CV"
+    "cv": "Télécharger le CV",
+    "form": {
+      "title": "M'écrire",
+      "to": "À",
+      "subjectLine": "Objet",
+      "subjectLineEmpty": "Choisissez un objet ci-dessous",
+      "name": "Nom complet",
+      "namePlaceholder": "Votre nom complet",
+      "email": "E-mail",
+      "emailPlaceholder": "vous@entreprise.com",
+      "company": "Entreprise / organisation",
+      "optional": "Facultatif",
+      "companyPlaceholder": "Où vous travaillez",
+      "subject": "Objet",
+      "subjects": {
+        "freelance": "Projet freelance",
+        "fullTime": "Offre d'emploi à temps plein",
+        "opportunity": "Opportunité professionnelle",
+        "collaboration": "Collaboration",
+        "consultation": "Conseil technique",
+        "other": "Autre"
+      },
+      "message": "Message",
+      "placeholders": {
+        "default": "Écrivez votre message…",
+        "freelance": "Décrivez votre projet, vos délais et votre budget…",
+        "fullTime": "Parlez-moi du poste, de l'équipe et du lieu…",
+        "opportunity": "Parlez-moi de l'opportunité et de ce que vous envisagez…",
+        "collaboration": "Que souhaiteriez-vous construire ensemble ?",
+        "consultation": "Décrivez la question technique ou le système sur lequel vous travaillez…",
+        "other": "Écrivez votre message…"
+      },
+      "counter": "{count} / {max}",
+      "counterMin": "{remaining, plural, one {encore # caractère} other {encore # caractères}}",
+      "submit": "Envoyer le message",
+      "sending": "Envoi…",
+      "sent": "Message envoyé",
+      "success": "Merci, votre message est en route. Je vous répondrai rapidement.",
+      "failed": "Votre message n'a pas pu être envoyé. Réessayez, ou écrivez-moi par e-mail.",
+      "unavailable": "Le formulaire est indisponible pour le moment. Vous pouvez m'écrire par e-mail.",
+      "fallback": "Ouvrir votre messagerie avec ce message",
+      "privacy": "Votre message arrive directement dans ma boîte de réception. Aucune donnée n'est conservée sur ce site.",
+      "honeypot": "Laissez cette case décochée",
+      "errors": {
+        "nameRequired": "Veuillez indiquer votre nom complet.",
+        "emailRequired": "Veuillez indiquer votre adresse e-mail.",
+        "emailInvalid": "Cette adresse e-mail ne semble pas valide.",
+        "subjectRequired": "Veuillez choisir un objet.",
+        "messageRequired": "Veuillez écrire un message.",
+        "messageShort": "Veuillez écrire au moins {min} caractères.",
+        "tooLong": "C'est trop long, veuillez raccourcir."
+      }
+    }
   },
   "Globe": {
     "label": "Globe montrant le parcours : Tunis, Montréal, la France, puis Koweït",
