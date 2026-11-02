@@ -1,8 +1,11 @@
 // Web3Forms delivers the contact form to the owner's inbox: no backend, nothing stored here.
+import { HCAPTCHA_FIELD } from "@/lib/hcaptcha";
+
 export const WEB3FORMS_ENDPOINT = "https://api.web3forms.com/submit";
 
 /** Inlined at build time; without it the form offers the mailto fallback. */
 const ACCESS_KEY = process.env.NEXT_PUBLIC_WEB3FORMS_KEY;
+export const hasWeb3FormsKey = Boolean(ACCESS_KEY);
 const REQUEST_TIMEOUT_MS = 15_000;
 
 export type Web3FormsMessage = {
@@ -14,6 +17,8 @@ export type Web3FormsMessage = {
   locale: string;
   /** The honeypot's state: Web3Forms rejects a submission where it is set. */
   botcheck: boolean;
+  /** The invisible hCaptcha's token, verified by Web3Forms. */
+  hCaptchaToken: string;
 };
 
 /** "unavailable": no access key in this build. "failed": the request did not go through. */
@@ -21,7 +26,10 @@ export type SendOutcome = "sent" | "failed" | "unavailable";
 
 type Web3FormsResponse = { success?: boolean };
 
-export async function sendWithWeb3Forms(message: Web3FormsMessage): Promise<SendOutcome> {
+export async function sendWithWeb3Forms({
+  hCaptchaToken,
+  ...message
+}: Web3FormsMessage): Promise<SendOutcome> {
   if (!ACCESS_KEY) return "unavailable";
   try {
     const response = await fetch(WEB3FORMS_ENDPOINT, {
@@ -32,6 +40,7 @@ export async function sendWithWeb3Forms(message: Web3FormsMessage): Promise<Send
         from_name: "Portfolio",
         replyto: message.email,
         ...message,
+        [HCAPTCHA_FIELD]: hCaptchaToken,
       }),
       signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
     });

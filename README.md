@@ -21,6 +21,8 @@ Put them in `.env.local` at the project root (not in `public/`, which is served 
 | `NEXT_PUBLIC_WEB3FORMS_KEY` | Access key of the [Web3Forms](https://web3forms.com) form that delivers the contact form to the inbox. If it is missing, the form shows a `mailto:` link pre-filled with the visitor's message instead.         |
 | `NEXT_PUBLIC_SITE_URL`      | Public origin of the site, without a trailing slash (e.g. `https://example.com`). Used for canonical URLs, Open Graph, the sitemap and the QR code in the Contact section. Defaults to `http://localhost:3000`. |
 
+Spam protection: the form sends an invisible hCaptcha token (Web3Forms' free shared sitekey, no key to configure). Turn on **hCaptcha** in the Web3Forms dashboard for that form so submissions without a valid token are rejected.
+
 On Vercel, set both in Project Settings → Environment Variables. When deploying, only `NEXT_PUBLIC_SITE_URL` needs to change.
 
 ## Scripts

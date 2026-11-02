@@ -109,7 +109,10 @@
         "messageRequired": "Veuillez écrire un message.",
         "messageShort": "Veuillez écrire au moins {min} caractères.",
         "tooLong": "C'est trop long, veuillez raccourcir."
-      }
+      },
+      "verifyCancelled": "La vérification a été fermée avant la fin. Appuyez sur Envoyer pour réessayer.",
+      "cooldown": "Merci pour votre message. Le formulaire sera de nouveau disponible dans quelques minutes.",
+      "captchaNotice": "Ce formulaire est protégé par hCaptcha ; sa <privacy>politique de confidentialité</privacy> et ses <terms>conditions d'utilisation</terms> s'appliquent."
     },
     "whatsapp": {
       "name": "WhatsApp",
