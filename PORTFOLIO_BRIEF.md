@@ -295,7 +295,7 @@ The CV PDF in `public/cv/` is provided by the owner and is never edited by the a
 | File | Use |
 |---|---|
 | `images/profile-transparent.png` | **Main portrait** (transparent background), integrated into the hero/about design with a subtle glow or gradient behind it. This overrides taste-skill's no-glow rule at the owner's explicit request |
-| `images/profile.jpg`, `images/profile-square.*` | Fallbacks / OG image source |
+| `images/profile.jpg` | JSON-LD `image` (the square and `.webp` variants were removed as unused; the owner keeps the originals) |
 | `images/certificates/certificate-ai-optimus.webp` | Certifications card + lightbox (AI training, Optimus Training) |
 | `images/certificates/tcf-b2.png` | Certifications card + lightbox (TCF B2) |
 | `cv/CV_Mohamed_Neji_Benzarti.pdf` | Download CV button (owner-provided, never edited by the agent; one CV for all locales unless the owner adds localized versions) |
@@ -333,8 +333,27 @@ Commit at the end of each phase with a Conventional Commit message.
 | 4b. 3D rework | ✅ Done | One persistent canvas, continuous dark page (see below) |
 | 5. Motion & polish | ✅ Done | Fixes + motion & polish (see below) |
 | 5b. Contact & WhatsApp | ✅ Done | Contact form, WhatsApp button, QR code (see below) |
-| 6. Audit & tests | ⏭ Next | |
+| 6. Audit & tests | 🟡 Mostly done | Tests green, A/BP/SEO 100; mobile Performance still below target (see below) |
 | 7. Deploy | ⏳ | Repo: github.com/neji123/neji-portfolio (`main`) |
+
+**Phase 6 in short** (2026-11-16):
+- **Machine rules** (the laptop overheated running the suite): stop old `next start` / Playwright / headless Chrome first; Playwright with **1 worker**; run only the spec files being fixed (`E2E_DEV_SERVER=0` skips `next dev`); the full suite at most once per session; no polling loops; no screenshots.
+- **Tests** (`tests/e2e/`): accessibility (axe WCAG 2.2 AA + best practices, headings, alt texts, skip link, focus ring on every tab stop), certificates lightbox, contact form (production + one dev-only test), CV download, i18n/RTL, layout (no sideways scroll at 360–1920), navigation + scrollspy + mobile menu, 404, SEO (metadata, canonical, hreflang, OG, JSON-LD, icons, manifest, sitemap, robots), WhatsApp/QR (number never in the markup). Every test fails on a console error. All run with **reduced motion and `--disable-3d-apis`** (static globe); one test, `globe.webgl.ts`, checks the real 3D globe loads without console errors. Full run: **143 passed, 0 failed, 31 skipped** (device-specific tests skipped on the other device), 5.9 min.
+- **Fixes**: Reveal animates `opacity` (not `autoAlpha`) so keyboard and screen readers reach waiting content; split lines hidden until they rise; Depth leaves below-viewport sections untouched; language pills named "English (EN)"; static globe dots drawn as one path per opacity step.
+- **SEO**: per-locale OG images (`public/og/og-{en,fr,ar}.png`, rendered by `scripts/generate-brand-assets.mjs`), icons + apple icon + favicon, web manifest, JSON-LD `alternateName`.
+- **Deferred 3D start on phones** (owner's decision, applied because mobile Performance was < 90): first touch/scroll/key or 2.5 s after load, then idle; first frame at the static globe's position and size, cross-fade, then glides to the scene in view; reduced motion on phones keeps the static globe; desktop unchanged.
+- **Lighthouse 12.8.2** (production build, localhost, one run per page; P / A / BP / SEO):
+
+  | Page | Before | After (fixes) | After deferred 3D |
+  |---|---|---|---|
+  | en mobile | 46 / 92 / 100 / 92 | 52 / 100 / 100 / 100 | **60** / 100 / 100 / 100 |
+  | fr mobile | 44 / 92 / 100 / 92 | 52 / 100 / 100 / 100 | **55** / 100 / 100 / 100 |
+  | ar mobile | 43 / 96 / 100 / 92 | 52 / 100 / 100 / 100 | **54** / 100 / 100 / 100 |
+  | en desktop | 70 / 96 / 100 / 92 | 74 / 100 / 100 / 100 | (unchanged code) |
+  | fr desktop | 66 / 96 / 100 / 92 | 72 / 100 / 100 / 100 | (unchanged code) |
+  | ar desktop | 70 / 100 / 100 / 92 | 72 / 100 / 100 / 100 | (unchanged code) |
+
+  Mobile TBT fell from 4.3–5.1 s to 1.1–2.0 s. **Open:** mobile LCP stays at 4.6–5.0 s: the LCP element (header name link) waits ~4.2 s of render delay for the page's own React hydration, not for the globe. Desktop is held by ~600 ms TBT. Next lever to decide: how the first-paint intro and hydration gate the hero/header text.
 
 **Phase 5b in short** (before Phase 6):
 - Contact is two columns from `lg` (stacked below): the closing line (sized by its column, `type-head-fit`, 3 lines at 1024 and 1440 in all locales), the email on one line at every width (container units, `clamp()`, left to right in Arabic, still magnetic), a "Chat on WhatsApp" option (no visible number), LinkedIn / GitHub / CV, then the QR code (desktop) or a Share button (phones); the letter-card form at the end.

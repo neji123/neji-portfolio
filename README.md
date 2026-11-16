@@ -38,3 +38,33 @@ On Vercel, set both in Project Settings → Environment Variables. When deployin
 | `npm run lint`                    | ESLint                                                                                |
 | `npm run typecheck`               | Route types + `tsc` (also checks that FR and AR have every key of `messages/en.json`) |
 | `npm run test:e2e`                | Playwright against the production build                                               |
+
+## Testing
+
+`npm run build` first: the suite runs against the production build on port 3100 (Playwright starts it), plus `next dev` on 3101 for the one dev-only contact test.
+
+- **One worker**, one browser at a time, so the machine stays cool.
+- Every test runs with **reduced motion and WebGL off** (`--disable-3d-apis`): the static globe stays and there are no fades to wait for. A single test, `tests/e2e/globe.webgl.ts` (project `globe`), loads the real 3D globe and fails on any console error.
+- Every page test runs in EN, FR and AR, on desktop (1440×900) and mobile (Pixel 7). Any console error fails a test; the mail service and WhatsApp are never reached and hCaptcha is a stand-in.
+- Run only what you are working on, without booting `next dev`:
+
+```bash
+E2E_DEV_SERVER=0 npx playwright test tests/e2e/certificates.spec.ts
+```
+
+## The 3D globe
+
+One fixed WebGL canvas behind the page, lazy-loaded (`next/dynamic`, `ssr: false`) over a server-rendered SVG globe.
+
+- **Desktop:** it starts once the page is idle after load.
+- **Phones** (narrow or coarse pointer): on the first touch, scroll or key, or 2.5 s after load, then at the next idle moment. Its first frame sits where the static globe is drawn and glides to the section in view, under a cross-fade. With reduced motion, phones keep the static globe.
+- Not loaded at all without WebGL, on Save-Data, or on devices with ≤ 2 cores or ≤ 2 GB of memory.
+
+## Social images and icons
+
+`scripts/generate-brand-assets.mjs` renders the Open Graph images (`public/og/og-{en,fr,ar}.png`, 1200×630) and the app icons from the running production build, in a real browser (so the Arabic is shaped correctly). Rerun it after changing the name, title or palette:
+
+```bash
+npm run build && npm run start -- --port 3100   # in another terminal
+node scripts/generate-brand-assets.mjs http://localhost:3100
+```
