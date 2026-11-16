@@ -50,7 +50,8 @@ export function LanguageSwitcher({ className, onNavigate }: LanguageSwitcherProp
                 locale={code}
                 hrefLang={code}
                 lang={code}
-                aria-label={meta.nativeName}
+                // The name holds the visible code too, so voice control can say "click EN".
+                aria-label={`${meta.nativeName} (${meta.code})`}
                 aria-current={isCurrent ? "true" : undefined}
                 onClick={(event) => handleClick(event, code)}
                 className={cn(

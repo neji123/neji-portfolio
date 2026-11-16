@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
+import { GLOBE_AVOID_ATTRIBUTE } from "@/components/three/globe-scenes";
 import { WhatsAppIcon } from "@/components/ui/icons";
 import { openWhatsApp } from "@/lib/whatsapp";
 
@@ -63,7 +64,13 @@ export function WhatsAppButton({ message, label }: WhatsAppButtonProps) {
   }, []);
 
   return (
-    <div ref={anchorRef} className="whatsapp-fab" data-covering={covering ? "" : undefined}>
+    // The globe's city buttons keep clear of it too (an overlapped target is hard to hit).
+    <div
+      ref={anchorRef}
+      className="whatsapp-fab"
+      data-covering={covering ? "" : undefined}
+      {...{ [GLOBE_AVOID_ATTRIBUTE]: "" }}
+    >
       <span aria-hidden="true" className="whatsapp-tooltip">
         {label}
       </span>

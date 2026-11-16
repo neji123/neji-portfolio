@@ -40,7 +40,18 @@ export function Depth({ children, className }: DepthProps) {
             y: 0,
             opacity: 1,
             ease: EASE.linear,
-            scrollTrigger: { trigger: element, start: "top bottom", end: "top 55%", scrub: true },
+            // Below the viewport the section keeps its natural state (nobody sees it there, and
+            // dimmed text would read as low contrast); the tilt takes over as its top enters.
+            immediateRender: false,
+            scrollTrigger: {
+              trigger: element,
+              start: "top bottom",
+              end: "top 55%",
+              scrub: true,
+              onLeaveBack: () => {
+                gsap.set(element, { clearProps: "transform,opacity" });
+              },
+            },
           },
         );
       });

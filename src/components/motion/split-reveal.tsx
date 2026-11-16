@@ -37,14 +37,21 @@ function SplitRevealBlock({ children, className }: SplitRevealProps) {
           type: "lines",
           mask: "lines",
           autoSplit: true,
-          onSplit: (self) =>
-            gsap.from(self.lines, {
+          onSplit: (self) => {
+            // Waiting lines sit below their masks, out of sight: hidden for real until they
+            // rise, so assistive checks never measure text nobody can see.
+            gsap.set(self.lines, { visibility: "hidden" });
+            return gsap.from(self.lines, {
               yPercent: 105,
               duration: DURATION.reveal,
               ease: EASE.out,
               stagger: STAGGER.lines,
+              onStart: () => {
+                gsap.set(self.lines, { visibility: "inherit" });
+              },
               scrollTrigger: { trigger: target, start: SCROLL_START, once: true },
-            }),
+            });
+          },
         });
         return () => split.revert();
       });

@@ -34,7 +34,9 @@ export function Reveal({
       mm.add(FULL_MOTION_QUERY, () => {
         const targets = stagger ? element.querySelectorAll("[data-reveal-item]") : element;
         gsap.from(targets, {
-          autoAlpha: 0,
+          // Opacity only (not autoAlpha): a waiting block stays focusable and readable, so the
+          // keyboard and screen readers reach content that has not scrolled in yet.
+          opacity: 0,
           y: from === "below" ? DISTANCE.rise : 0,
           x: from === "start" ? -DISTANCE.slide * inlineSign : 0,
           duration: DURATION.slow,
