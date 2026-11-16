@@ -305,16 +305,26 @@
 }
 
 @layer components {
-  /* WordReveal: each word rises out of its own mask on first paint. */
-  .word-mask {
-    display: inline-block;
-    overflow: clip;
-    /* Room for ascenders, descenders and Arabic marks inside the mask. */
-    padding-block: 0.12em;
-    margin-block: -0.12em;
-    vertical-align: top;
+  /*
+   * First-load intro for the hero text. It starts from a VISIBLE state (never opacity 0, no
+   * clip, no visibility hidden), so the server HTML paints the name and the title at once and
+   * they count as LCP before React starts. Phones get a barely-there settle; wider screens a
+   * slightly longer travel with a light fade from half opacity.
+   */
+  .word-rise,
+  .rise-in {
+    --intro-from-opacity: 1;
+    --intro-word-shift: 0.08em;
+    --intro-line-shift: 0.25rem;
+
+    @media (width >= 48rem) {
+      --intro-from-opacity: 0.5;
+      --intro-word-shift: 0.28em;
+      --intro-line-shift: 0.75rem;
+    }
   }
 
+  /* WordReveal: each word settles into place, one after another. */
   .word-rise {
     display: inline-block;
     animation: word-rise var(--duration-reveal) var(--ease-expo-out) both;
@@ -416,7 +426,7 @@
 
   /*
    * First load: the name, the title and the globe arrive together, once per visit. The text is
-   * in the HTML from the start (LCP); only its transform and opacity play.
+   * in the HTML and visible from the first paint (LCP); it only settles, the globe rises in.
    */
   .globe-frame > svg {
     animation: globe-arrive var(--duration-reveal) var(--ease-expo-out) 120ms both;
@@ -909,16 +919,18 @@
   }
 }
 
+/* Both start visible (see .word-rise / .rise-in): the hero text is the page's LCP. */
 @keyframes word-rise {
   from {
-    transform: translateY(105%);
+    opacity: var(--intro-from-opacity);
+    transform: translateY(var(--intro-word-shift));
   }
 }
 
 @keyframes rise-in {
   from {
-    opacity: 0;
-    transform: translateY(1.25rem);
+    opacity: var(--intro-from-opacity);
+    transform: translateY(var(--intro-line-shift));
   }
 }
 

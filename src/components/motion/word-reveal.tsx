@@ -15,10 +15,11 @@ type WordRevealProps = {
 };
 
 /**
- * Words rise out of a mask on first paint. CSS only, so the text is in the HTML and
- * paints at once (LCP), and works without JavaScript. Splits on spaces, never inside
- * a word, which keeps Arabic letters joined. The spaces sit between the masks: inside an
- * inline-block a trailing space collapses, and the words would run together.
+ * Words settle into place one after another on first paint. CSS only, and every word is
+ * visible from the first frame (no mask, no opacity 0), so the text paints at once (LCP)
+ * and works without JavaScript. Splits on spaces, never inside a word, which keeps Arabic
+ * letters joined. The spaces sit between the words: inside an inline-block a trailing space
+ * collapses, and the words would run together.
  */
 export function WordReveal({ as: Tag, text, id, className, avoidGlobe }: WordRevealProps) {
   const words = text.split(" ");
@@ -27,13 +28,11 @@ export function WordReveal({ as: Tag, text, id, className, avoidGlobe }: WordRev
       {words.map((word, index) => (
         <Fragment key={`${word}-${index}`}>
           {index > 0 ? " " : null}
-          <span className="word-mask">
-            <span
-              className="word-rise"
-              style={{ animationDelay: `${FIRST_WORD_DELAY_MS + index * WORD_STAGGER_MS}ms` }}
-            >
-              {word}
-            </span>
+          <span
+            className="word-rise"
+            style={{ animationDelay: `${FIRST_WORD_DELAY_MS + index * WORD_STAGGER_MS}ms` }}
+          >
+            {word}
           </span>
         </Fragment>
       ))}
