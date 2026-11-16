@@ -40,6 +40,31 @@ function arcPath(from: LatLon, to: LatLon, view: OrthographicView, legIndex: num
   return path;
 }
 
+/** One circle as a path: two half-arcs from its left edge. */
+function dotPath(x: number, y: number, r: number): string {
+  const diameter = (r * 2).toFixed(2);
+  return `M${(x - r).toFixed(1)},${y.toFixed(1)}a${r.toFixed(2)},${r.toFixed(2)} 0 1,0 ${diameter},0a${r.toFixed(2)},${r.toFixed(2)} 0 1,0 -${diameter},0`;
+}
+
+/**
+ * The land dots, one path per opacity step instead of one element per dot: the same picture
+ * with a few dozen nodes rather than two thousand (a lighter page and a faster hydration).
+ */
+function dotLayers(
+  dots: readonly LandDot[],
+  view: OrthographicView,
+): { opacity: string; d: string }[] {
+  const layers = new Map<string, string>();
+  dots.forEach(([lat, lon]) => {
+    const p = projectOrthographic({ lat, lon }, view);
+    if (p.depth <= 0) return;
+    const opacity = (DOT_MIN_OPACITY + DOT_DEPTH_OPACITY * p.depth).toFixed(2);
+    const r = DOT_MIN_RADIUS + DOT_DEPTH_RADIUS * p.depth;
+    layers.set(opacity, (layers.get(opacity) ?? "") + dotPath(p.x, p.y, r));
+  });
+  return Array.from(layers, ([opacity, d]) => ({ opacity, d }));
+}
+
 /** The static globe: server-rendered, shown first and kept whenever WebGL is unavailable. */
 export function GlobeFallback({
   dots,
@@ -64,19 +89,9 @@ export function GlobeFallback({
     >
       <circle r={RADIUS} fill="var(--globe)" />
       <g fill="var(--dot)">
-        {dots.map(([lat, lon]) => {
-          const p = projectOrthographic({ lat, lon }, view);
-          if (p.depth <= 0) return null;
-          return (
-            <circle
-              key={`${lat},${lon}`}
-              cx={p.x.toFixed(1)}
-              cy={p.y.toFixed(1)}
-              r={(DOT_MIN_RADIUS + DOT_DEPTH_RADIUS * p.depth).toFixed(2)}
-              opacity={(DOT_MIN_OPACITY + DOT_DEPTH_OPACITY * p.depth).toFixed(2)}
-            />
-          );
-        })}
+        {dotLayers(dots, view).map(({ opacity, d }) => (
+          <path key={opacity} d={d} opacity={opacity} />
+        ))}
       </g>
       <g fill="none" stroke="var(--route)" strokeWidth="3" strokeLinecap="round">
         {route.map(([fromId, toId], index) => {
