@@ -46,6 +46,11 @@ type GlobeCameraProps = {
   driver: RefObject<GlobeDriver>;
   reducedMotion: boolean;
   parallax: boolean;
+  /**
+   * Start from the hero placement, where the static globe is drawn, and travel to the scene in
+   * view, instead of appearing there directly (phones start the globe late, maybe mid-page).
+   */
+  startAtHero?: boolean;
 };
 
 type Aimed = { place: LatLon; zoom: number };
@@ -94,7 +99,14 @@ function flightAim(
  * where the globe sits on screen (a view offset, so the globe is never cropped by a box),
  * how large it is, and what it looks at. Brightness is eased by each layer (`stepLook`).
  */
-export function GlobeCamera({ stops, home, driver, reducedMotion, parallax }: GlobeCameraProps) {
+export function GlobeCamera({
+  stops,
+  home,
+  driver,
+  reducedMotion,
+  parallax,
+  startAtHero = false,
+}: GlobeCameraProps) {
   const camera = useThree((state) => state.camera);
   const stopVectors = useMemo(
     () => new Map(stops.map((stop) => [stop.id, toVector3(stop)])),
@@ -119,11 +131,21 @@ export function GlobeCamera({ stops, home, driver, reducedMotion, parallax }: Gl
     const delta = Math.min(rawDelta, MAX_DELTA);
     const input = driver.current;
     const now = state.current;
+    const layout = input.wide ? "wide" : "narrow";
+    if (!now.primed && startAtHero && !reducedMotion) {
+      // The first frame matches the static globe exactly, so the cross-fade does not jump.
+      const hero = GLOBE_SCENES.hero[layout];
+      now.place.x = hero.x;
+      now.place.y = hero.y;
+      now.place.r = hero.r;
+      toVector3(HERO_AIM, 1, now.direction);
+      now.zoom = 1;
+      now.primed = true;
+    }
     const settle = !now.primed || reducedMotion;
     const pointerK = settle ? 1 : dampFactor(DAMPING.pointer, delta);
     const cameraK = settle ? 1 : dampFactor(DAMPING.camera, delta);
     const placeK = settle ? 1 : dampFactor(PLACEMENT_DAMPING, delta);
-    const layout = input.wide ? "wide" : "narrow";
 
     const follow = parallax && !reducedMotion;
     now.x += ((follow ? input.pointer.x : 0) - now.x) * pointerK;

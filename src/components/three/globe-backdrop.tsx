@@ -20,7 +20,7 @@ import { cn } from "@/lib/cn";
 import { ScrollTrigger, useGSAP } from "@/lib/gsap";
 import { flightAt } from "@/lib/journey-flight";
 import { isJourneyStopId, JOURNEY_ROUTE_ID, roleAnchorId } from "@/lib/journey-stops";
-import { FINE_POINTER_QUERY } from "@/lib/motion";
+import { FINE_POINTER_QUERY, REDUCED_MOTION_QUERY } from "@/lib/motion";
 import { type GlobeStop, type JourneyLeg, type JourneyStopId } from "@/types/journey";
 
 import { createGlobeDriver, type GlobeDriver } from "./globe-driver";
@@ -42,6 +42,10 @@ const JourneyGlobe = dynamic(() => import("./journey-globe").then((m) => m.Journ
 
 const IDLE_TIMEOUT = 2000;
 const IDLE_FALLBACK_DELAY = 200;
+/** Phones: how long after load the globe starts by itself when nobody has touched the page. */
+const PHONE_START_DELAY = 2500;
+/** Any of these counts as the visitor engaging with the page. */
+const ENGAGE_EVENTS = ["pointerdown", "touchstart", "keydown", "wheel", "scroll"] as const;
 const LOW_POWER_QUERY = "(max-width: 47.99rem), (pointer: coarse)";
 /** The line of the viewport (from the top) where a role counts as being read. */
 const READING_LINE = 0.5;
@@ -92,6 +96,36 @@ function whenIdle(callback: () => void): () => void {
     window.removeEventListener("load", start);
     if (idle !== undefined) window.cancelIdleCallback(idle);
     if (timer !== undefined) window.clearTimeout(timer);
+  };
+}
+
+/**
+ * Phones: the first interaction, or a pause after load, whichever comes first; then the next
+ * idle moment, so the start never lands inside the input that triggered it. The hero, its
+ * text and the static globe own the first seconds of a slow device.
+ */
+function whenEngaged(callback: () => void): () => void {
+  let timer: number | undefined;
+  let cancelIdle: (() => void) | undefined;
+  const listen = { capture: true, passive: true } as const;
+  const disarm = () => {
+    ENGAGE_EVENTS.forEach((type) => window.removeEventListener(type, engage, listen));
+    window.removeEventListener("load", arm);
+    if (timer !== undefined) window.clearTimeout(timer);
+  };
+  function engage() {
+    disarm();
+    cancelIdle ??= whenIdle(callback);
+  }
+  function arm() {
+    timer = window.setTimeout(engage, PHONE_START_DELAY);
+  }
+  ENGAGE_EVENTS.forEach((type) => window.addEventListener(type, engage, listen));
+  if (document.readyState === "complete") arm();
+  else window.addEventListener("load", arm, { once: true });
+  return () => {
+    disarm();
+    cancelIdle?.();
   };
 }
 
@@ -177,13 +211,16 @@ export function GlobeBackdrop({ stops, route, label, hint, children }: GlobeBack
     driver.current.labelsShown = labelsShown;
   }, [wide, direction, labelsShown]);
 
-  useEffect(
-    () =>
-      whenIdle(() => {
-        if (canRender3D()) setLoad(true);
-      }),
-    [],
-  );
+  useEffect(() => {
+    const start = () => {
+      if (canRender3D()) setLoad(true);
+    };
+    // Desktop: as soon as the page is idle after load.
+    if (!window.matchMedia(LOW_POWER_QUERY).matches) return whenIdle(start);
+    // Phones with reduced motion keep the static globe; others start it once engaged.
+    if (window.matchMedia(REDUCED_MOTION_QUERY).matches) return undefined;
+    return whenEngaged(start);
+  }, []);
 
   // A hidden tab draws nothing.
   useEffect(() => {
@@ -346,6 +383,7 @@ export function GlobeBackdrop({ stops, route, label, hint, children }: GlobeBack
               reducedMotion={reducedMotion}
               lowPower={lowPower}
               parallax={parallax}
+              startAtHero={lowPower}
               onReady={handleReady}
             />
           </div>

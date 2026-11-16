@@ -34,6 +34,8 @@ export type JourneyGlobeProps = {
   /** Phones and low-power devices: fewer dots and stars, no antialiasing. */
   lowPower: boolean;
   parallax: boolean;
+  /** The globe started late (phones): its first frame sits where the static globe is drawn. */
+  startAtHero?: boolean;
   onReady: () => void;
 };
 
@@ -71,6 +73,7 @@ export function JourneyGlobe({
   reducedMotion,
   lowPower,
   parallax,
+  startAtHero = false,
   onReady,
 }: JourneyGlobeProps) {
   const frameloop = !active ? "never" : reducedMotion ? "demand" : "always";
@@ -95,6 +98,7 @@ export function JourneyGlobe({
         driver={driver}
         reducedMotion={reducedMotion}
         parallax={parallax}
+        startAtHero={startAtHero}
       />
       <GlobeStars sparse={lowPower} />
       <GlobeSurface sparse={lowPower} driver={driver} reducedMotion={reducedMotion} />
