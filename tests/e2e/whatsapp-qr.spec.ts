@@ -5,8 +5,9 @@ for (const locale of LOCALES) {
     test("the number and the chat address are nowhere in the HTML", async ({ request }) => {
       const html = await (await request.get(`/${locale}`)).text();
       expect(html).not.toContain("wa.me");
-      expect(html).not.toMatch(/50\s?506\s?050/);
-      expect(html).not.toContain("21650506050");
+      expect(html).not.toMatch(/9802[\s-]?2955/);
+      expect(html).not.toContain("96598022955");
+      expect(html).not.toContain("+965");
     });
 
     for (const where of ["floating", "contact"] as const) {
@@ -30,7 +31,7 @@ for (const locale of LOCALES) {
         const [chat] = await Promise.all([context.waitForEvent("page"), button.click()]);
         const url = new URL(chat.url());
         expect(url.origin).toBe("https://wa.me");
-        expect(url.pathname).toMatch(/^\/216\d{8}$/);
+        expect(url.pathname).toBe("/96598022955");
         expect(url.searchParams.get("text")).toBe(t.message);
         await chat.close();
       });

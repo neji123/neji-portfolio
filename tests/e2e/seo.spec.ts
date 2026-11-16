@@ -78,7 +78,7 @@ test.describe("SEO", () => {
         if (profile[code].name !== person.name)
           expect(jsonLd.alternateName).toContain(profile[code].name);
       }
-      expect(JSON.stringify(jsonLd)).not.toMatch(/telephone|\+216|wa\.me/);
+      expect(JSON.stringify(jsonLd)).not.toMatch(/telephone|\+965|98022955|wa\.me/);
     });
   }
 

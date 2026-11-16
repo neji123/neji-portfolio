@@ -1,7 +1,7 @@
 // Scrapers read markup: the number and the chat address are never in the HTML or the React
 // payload. Only client code imports this file, and the link is assembled at the moment of a click.
 // (The number is in the CV PDF by the owner's choice.)
-const NUMBER_PARTS = ["216", "50", "506", "050"] as const;
+const NUMBER_PARTS = ["965", "98", "022", "955"] as const;
 const HOST_PARTS = ["wa", "me"] as const;
 
 /** Opens a WhatsApp chat with the owner in a new tab, the visitor's first line already written. */
