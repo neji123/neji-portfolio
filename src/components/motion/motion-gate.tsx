@@ -56,6 +56,11 @@ export function IntroGate() {
 export function MotionGate() {
   const locale = useLocale();
 
+  // A plain signal that the page is interactive (the end-to-end tests wait for it).
+  useEffect(() => {
+    root().hydrated = "true";
+  }, []);
+
   useIsomorphicLayoutEffect(() => {
     const data = root();
     if (shownLocale !== null && shownLocale !== locale) data.intro = "seen";
