@@ -6,7 +6,6 @@ const withImage = certifications.filter((item) => item.proof.kind === "image");
 
 for (const locale of LOCALES) {
   test(`${locale}: each certificate opens in an accessible lightbox`, async ({ page }) => {
-    test.setTimeout(90_000);
     await openLocale(page, locale);
     const t = messages[locale].Certifications;
 
@@ -40,19 +39,14 @@ for (const locale of LOCALES) {
       await expect(dialog).toBeHidden();
       await expect(trigger).toBeFocused();
 
-      // The close button and a click on the surround close it too. The pointer leaves the
-      // card first: its hover lift would keep it moving under the cursor.
-      await page.mouse.move(0, 0);
-      await page.waitForTimeout(400);
-      await trigger.click();
-      await dialog.getByRole("button", { name: t.close }).click();
-      await expect(dialog).toBeHidden();
-      // Wait out the closing fade before reopening, and the opening fade before clicking.
-      await page.mouse.move(0, 0);
-      await page.waitForTimeout(400);
+      // The close button and a click on the surround close it too. Reduced motion (the project
+      // default) makes the open and close instant, so there is no fade to wait out.
       await trigger.click();
       await expect(dialog).toBeVisible();
-      await page.waitForTimeout(400);
+      await dialog.getByRole("button", { name: t.close }).click();
+      await expect(dialog).toBeHidden();
+      await trigger.click();
+      await expect(dialog).toBeVisible();
       await page.mouse.click(5, (page.viewportSize()?.height ?? 600) - 5);
       await expect(dialog).toBeHidden();
     }

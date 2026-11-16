@@ -10,23 +10,14 @@ import {
 
 for (const locale of LOCALES) {
   test.describe(`accessibility (${locale})`, () => {
-    test("axe: no violations on first paint and after every section has entered", async ({
+    // Reduced motion is the project default: no intro or entrance to wait for.
+    test("axe: no violations on first paint and after scrolling the whole page", async ({
       page,
     }) => {
-      // axe walks a large page twice while WebGL renders.
-      test.setTimeout(120_000);
+      test.setTimeout(90_000);
       await openLocale(page, locale);
-      // The intro (name, title, globe) plays for about 1.5 s on a first visit.
-      await page.waitForTimeout(2000);
       await expectNoAxeViolations(page);
       await scrollThrough(page);
-      await expectNoAxeViolations(page);
-    });
-
-    test("axe: no violations with reduced motion", async ({ page }) => {
-      test.setTimeout(90_000);
-      await page.emulateMedia({ reducedMotion: "reduce" });
-      await openLocale(page, locale);
       await expectNoAxeViolations(page);
     });
 
@@ -76,7 +67,6 @@ test.describe("keyboard", () => {
   test("every stop of the tab order shows a visible focus ring", async ({ page }, testInfo) => {
     test.setTimeout(120_000);
     await openLocale(page, "en");
-    await page.waitForTimeout(2000);
     const names: string[] = [];
     // The whole page: header, globe cities, cards, form, WhatsApp, footer, until focus cycles.
     for (let i = 0; i < 200; i += 1) {

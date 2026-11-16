@@ -92,8 +92,8 @@ export async function scrollThrough(page: Page) {
     window.scrollTo(0, document.documentElement.scrollHeight);
     await pause();
   });
-  // The longest entrance (the reveal) lasts 1.1 s.
-  await page.waitForTimeout(1500);
+  // Reduced motion (the project default) has no entrances; a short settle for layout.
+  await page.waitForTimeout(300);
 }
 
 export async function expectNoAxeViolations(page: Page, include?: string) {
