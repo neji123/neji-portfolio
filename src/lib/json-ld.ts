@@ -4,13 +4,17 @@ import { profile } from "@/content/profile";
 import { site } from "@/content/site";
 import { type Locale, localeMeta, locales } from "@/i18n/locales";
 
-/** schema.org Person for the current locale. No address, birth date or ID, by design. */
+/** schema.org Person for the current locale. No phone, address, birth date or ID, by design. */
 export function personJsonLd(locale: Locale) {
   const person = profile[locale];
   return {
     "@context": "https://schema.org",
     "@type": "Person",
     name: person.name,
+    // The same name as written in the other languages of the site.
+    alternateName: Array.from(new Set(locales.map((code) => profile[code].name))).filter(
+      (name) => name !== person.name,
+    ),
     jobTitle: person.title,
     description: person.tagline,
     url: `${site.url}/${locale}`,

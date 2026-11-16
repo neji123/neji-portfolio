@@ -29,6 +29,8 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
+const OG_IMAGE_SIZE = { width: 1200, height: 630 } as const;
+
 const languageAlternates = {
   ...Object.fromEntries(locales.map((code) => [code, `/${code}`])),
   "x-default": `/${routing.defaultLocale}`,
@@ -40,6 +42,8 @@ export async function generateMetadata({ params }: LayoutProps<"/[locale]">): Pr
   const person = profile[locale];
   const title = `${person.name} · ${person.title}`;
   const description = siteDescription[locale];
+  // Rendered by scripts/generate-brand-assets.mjs: a real browser shapes the Arabic.
+  const image = { url: `/og/og-${locale}.png`, ...OG_IMAGE_SIZE, alt: title, type: "image/png" };
 
   return {
     metadataBase: new URL(site.url),
@@ -56,8 +60,9 @@ export async function generateMetadata({ params }: LayoutProps<"/[locale]">): Pr
       alternateLocale: locales
         .filter((code) => code !== locale)
         .map((code) => localeMeta[code].openGraph),
+      images: [image],
     },
-    twitter: { card: "summary_large_image", title, description },
+    twitter: { card: "summary_large_image", title, description, images: [image] },
   };
 }
 
