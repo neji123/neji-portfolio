@@ -32,8 +32,7 @@
     "skills": "Skills",
     "certifications": "Certifications",
     "education": "Education",
-    "languages": "Languages",
-    "contact": "Contact"
+    "languages": "Languages"
   },
   "Experience": {
     "present": "Present",
@@ -130,7 +129,6 @@
   },
   "Globe": {
     "label": "Globe showing the career route: Tunis, Montréal, France, then Kuwait City",
-    "loading": "Loading the journey globe",
     "showRole": "Show this role in Experience"
   },
   "Footer": {

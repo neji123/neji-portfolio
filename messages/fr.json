@@ -32,8 +32,7 @@
     "skills": "Compétences",
     "certifications": "Certifications",
     "education": "Formation",
-    "languages": "Langues",
-    "contact": "Contact"
+    "languages": "Langues"
   },
   "Experience": {
     "present": "Aujourd'hui",
@@ -130,7 +129,6 @@
   },
   "Globe": {
     "label": "Globe montrant le parcours : Tunis, Montréal, la France, puis Koweït",
-    "loading": "Chargement du globe du parcours",
     "showRole": "Voir ce poste dans Expérience"
   },
   "Footer": {
